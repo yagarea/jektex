@@ -12,6 +12,7 @@
 
 # ruby mine files
 /.idea/
+/.idea/*
 # Default ignored files
 /shelf/
 /workspace.xml
