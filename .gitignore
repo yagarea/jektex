@@ -11,8 +11,8 @@
 /tmp/
 
 # ruby mine files
-/.idea/
-/.idea/*
+.idea/
+.idea/*
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -66,3 +66,15 @@ build-iPhoneSimulator/
 
 # Used by RuboCop. Remote config files pulled in from inherit_from directive.
 # .rubocop-https?--*
+.idea/Jektex.iml
+.idea/Jektex.iml
+.idea/Jektex.iml
+.idea
+.idea
+.idea
+.idea
+.idea
+.idea
+.idea
+.idea
+.idea
