@@ -82,8 +82,8 @@ end
 
 Jekyll::Hooks.register :site, :after_init do |site|
   # load macros from config file
-  if site.config["latex-macros"] != nil
-    for macro_definition in site.config["latex-macros"]
+  if site.config["jektex-macros"] != nil
+    for macro_definition in site.config["jektex-macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
   end
