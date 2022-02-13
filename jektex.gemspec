@@ -2,11 +2,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "jekyll_custom_permalink/version"
+require "jektex/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "jektex"
-  spec.version       = JekyllCustomPermalink::VERSION
+  spec.version       = Jektex::VERSION
   spec.licenses      = ["GPL-3.0-or-later"]
   spec.summary       = "Highly optimized latex rendering for Jekyll"
   spec.description   = "Highly optimized and cached latex server side rendering for Jekyll with macros and dynamic output"
