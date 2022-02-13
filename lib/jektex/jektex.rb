@@ -2,7 +2,8 @@ require 'execjs'
 require 'digest'
 require 'htmlentities'
 
-PATH_TO_JS = "./katex.min.js"
+
+PATH_TO_JS = __dir__ + "/katex.min.js"
 CACHE_DIR = "./.jektex-cache/"
 CACHE_FILE = "jektex-cache.marshal"
 PATH_TO_CACHE = CACHE_DIR + CACHE_FILE
@@ -86,7 +87,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
   end
-  # print macro informaion
+  # print macro information
   if $global_macros.size == 0
     puts "             LaTeX: no macros loaded"
   else
@@ -122,4 +123,3 @@ Jekyll::Hooks.register :site, :post_write do
     File.open(PATH_TO_CACHE, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
 end
-
