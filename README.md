@@ -2,9 +2,9 @@
 Jekyll plugin for blazing fast server side cached LaTeX rendering with support of macros.
 Enjoy comfort of latex and markdown without cluttering your site with bloated javascript.
 
-## About
+## Features
 - Renders LaTeX formulas during Jekyll rendering
-- Works without any javascript o clients side
+- Works without any javascript on clients side
 - Is faster than any other server side Jekyll latex renderer
 - Supports user defined global macros
 - Has I/O efficient caching system
@@ -49,8 +49,8 @@ You can define global macros in your `_config.yml` file:
 ```yaml
 # Jektex macros
 jektex-macros:
-   - ["\\Q", "\\mathbb{Q}"]
-   - ["\\C", "\\mathbb{C}"]
+    - ["\\Q", "\\mathbb{Q}"]
+    - ["\\C", "\\mathbb{C}"]
 ```
 
 ### Clearing cache
@@ -63,7 +63,7 @@ Add `jektex` to your `Gemfile` like this:
 
 ```yaml
 group :jekyll_plugins do
-	gem "jektex"
+    gem "jektex"
 end
 ```
 
@@ -74,7 +74,7 @@ Just run `gem install jektex` and add jektex to your plugin list in your `_confi
 file:
 ```
 plugins:
-	- jektex
+    - jektex
 
 ```
 
@@ -83,4 +83,4 @@ Do not forget to add `katex.min.css` to you html head:
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
-It is much better practice to download css file and loaded as an asset from your server directly.
+It is much better practice to download **css** file and loaded as an asset from your server directly.
