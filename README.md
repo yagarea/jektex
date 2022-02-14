@@ -6,12 +6,12 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Renders LaTeX formulas during Jekyll rendering
 - Works without any javascript o clients side
 - Is faster than any other server side Jekyll latex renderer
-- Supports user defined macros
+- Supports user defined global macros
 - Has I/O efficient caching system
 - Has dynamic and informative log during rendering
 - Is easy to setup
 - Does not interfere with Jekyll workflow and project structure
-- Marks invalid syntax i document
+- Marks invalid syntax in document
 - Prints location of invalid expression during rendering
 
 ## Usage
@@ -45,6 +45,7 @@ markdown parser than hacking kramdown to behave differently._
 
 ### Macros
 You can define global macros in your `_config.yml` file:
+
 ```yaml
 # Jektex macros
 jektex-macros:
@@ -52,15 +53,34 @@ jektex-macros:
    - ["\\C", "\\mathbb{C}"]
 ```
 
+### Clearing cache
+To clear cached expressions you have to delete `.jektex-cache` directory in your 
+
 ## Installation
-**Bundle**  
-Add `jektex` to your gemfile and run `bundle install`
 
-**Global**  
-Just run `gem install jektex`
+### Using bundler
+Add `jektex` to your `Gemfile` like this:
 
+```yaml
+group :jekyll_plugins do
+	gem "jektex"
+end
+```
+
+and run `bundle install`
+
+### Without bundler
+Just run `gem install jektex` and add jektex to your plugin list in your `_config.yml` 
+file:
+```
+plugins:
+	- jektex
+
+```
+
+### Style sheets
 Do not forget to add `katex.min.css` to you html head:
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
-
+It is much better practice to download css file and loaded as an asset from your server directly.
