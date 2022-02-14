@@ -72,10 +72,9 @@ and run `bundle install`
 ### Without bundler
 Just run `gem install jektex` and add jektex to your plugin list in your `_config.yml` 
 file:
-```
+```yaml
 plugins:
     - jektex
-
 ```
 
 ### Style sheets
@@ -84,3 +83,4 @@ Do not forget to add `katex.min.css` to you html head:
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
 It is much better practice to download **css** file and loaded as an asset from your server directly.
+
