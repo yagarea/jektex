@@ -18,7 +18,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 
 ### Notation
 **Inline formula**  
-Put formula between two pairs of `$` inside of paragraph.
+Put formula between two pairs of dolar signs (`$$`) inside of paragraph.
 
 ```latex
 Lorem ipsum dolor sit amet, consectetur $$e^{i\theta}=\cos(\theta)+i\sin(\theta)$$
@@ -26,9 +26,9 @@ adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliq
 ```
 
 **Display formula**  
-Put formula between two pairs of `$` and surround it between two empty lines.
+Put formula between two pairs of dolar sings (`$$`) and surround it by two empty lines.
 ```latex
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua.
 
 $$ i\hbar\frac{\partial}{\partial t} \Psi(\mathbf{r},t) = \left [ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right ] \Psi(\mathbf{r},t) $$
@@ -39,8 +39,8 @@ ea commodo consequat.
 
 _Why Jektex does not use conventional single `$` for inline formulas and double `$$` for
 display mode?  
-Unfortunately this is how [kramdown](https://kramdown.gettalong.org/) 
-(Jekyll's markdown parser) works and it would probably do be easier to write custom 
+Unfortunately this is how [kramdown](https://kramdown.gettalong.org/)
+(Jekyll's markdown parser) works and it would probably do be easier to write custom
 markdown parser than hacking kramdown to behave differently._
 
 ### Macros
@@ -55,8 +55,10 @@ jektex-macros:
 
 ### Clearing cache
 To clear cached expressions you have to delete `.jektex-cache` directory in your 
+project directory
 
 ## Installation
+This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
 
 ### Using bundler
 Add `jektex` to your `Gemfile` like this:
