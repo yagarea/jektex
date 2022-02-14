@@ -60,7 +60,7 @@ project directory
 ## Installation
 This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
 
-### Using bundler
+**Using bundler**  
 Add `jektex` to your `Gemfile` like this:
 
 ```ruby
@@ -71,18 +71,19 @@ end
 
 and run `bundle install`
 
-### Without bundler
-Just run `gem install jektex` and add jektex to your plugin list in your `_config.yml` 
-file:
+**Without bundler**  
+Just run `gem install jektex`
+
+**After installation**  
+Add jektex to your plugin list in your `_config.yml` file:
 ```yaml
 plugins:
     - jektex
 ```
 
-### Style sheets
-Do not forget to add `katex.min.css` to you html head:
+and do not forget to add `katex.min.css` to you html head:
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
 It is much better practice to download **css** file and loaded as an asset from your server directly.
-
+You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
