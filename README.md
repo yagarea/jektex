@@ -61,7 +61,7 @@ To clear cached expressions you have to delete `.jektex-cache` directory in your
 ### Using bundler
 Add `jektex` to your `Gemfile` like this:
 
-```yaml
+```ruby
 group :jekyll_plugins do
     gem "jektex"
 end
