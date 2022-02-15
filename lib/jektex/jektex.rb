@@ -115,7 +115,6 @@ end
 Jekyll::Hooks.register :site, :post_write do
   # print new line to prevent overwriting previous output
   print "\n"
-  puts 
   # check if caching is enabled
   if $disable_disk_cache == false
     # save cache to disk
