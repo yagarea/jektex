@@ -39,9 +39,8 @@ ea commodo consequat.
 
 _Why Jektex does not use conventional single `$` for inline formulas and double `$$` for
 display mode?  
-Unfortunately this is how [kramdown](https://kramdown.gettalong.org/)
-(Jekyll's markdown parser) works and it would probably do be easier to write custom
-markdown parser than hacking kramdown to behave differently._
+This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works 
+so I decided to respect this convention. It makes this plugin more consistent and universal.
 
 ### Macros
 You can define global macros in your `_config.yml` file:
