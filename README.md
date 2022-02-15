@@ -40,7 +40,7 @@ ea commodo consequat.
 _Why Jektex does not use conventional single `$` for inline formulas and double `$$` for
 display mode?  
 This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works 
-so I decided to respect this convention. It makes this plugin more consistent and universal.
+so I decided to respect this convention. It makes this plugin more consistent and universal._
 
 ### Macros
 You can define global macros in your `_config.yml` file:
@@ -86,3 +86,4 @@ and do not forget to add `katex.min.css` to you html head:
 ```
 It is much better practice to download **css** file and loaded as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
+
