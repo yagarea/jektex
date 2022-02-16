@@ -13,6 +13,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Does not interfere with Jekyll workflow and project structure
 - Marks invalid syntax in document
 - Prints location of invalid expression during rendering
+- Tags places within the rendered documents with syntax errors
 
 ## Usage
 
@@ -31,7 +32,7 @@ Put formula between two pairs of dolar sings (`$$`) and surround it by two empty
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua.
 
-$$ i\hbar\frac{\partial}{\partial t} \Psi(\mathbf{r},t) = \left [ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right ] \Psi(\mathbf{r},t) $$
+$$ \left[ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right] \Psi(\mathbf{r},t) $$
 
 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
 ea commodo consequat.
@@ -52,9 +53,14 @@ jektex-macros:
     - ["\\C", "\\mathbb{C}"]
 ```
 
-### Clearing cache
+### Cache control
+
+**Clearing cache**  
 To clear cached expressions you have to delete `.jektex-cache` directory in your 
-project directory
+project directory.
+
+**Disabling cache**  
+You can disable caching with `disable_disk_cache = false` in `_config.yml`.
 
 ## Installation
 This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
