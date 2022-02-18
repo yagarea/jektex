@@ -14,11 +14,11 @@ $count_newly_generated_expressions = 0
 $cache = nil
 $disable_disk_cache = false
 
-def convert(doc)
-  # convert HTML enetities back to characters
-  post = HTMLEntities.new.decode(doc.to_s)
-  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, doc.path) }
-  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, doc.path) }
+def convert(page)
+  # convert HTML entities back to characters
+  post = HTMLEntities.new.decode(page.output.to_s)
+  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.path) }
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.path) }
   return post
 end
 
@@ -47,7 +47,7 @@ def escape_method( type, string, doc_path )
     # create the cache directory, if it doesn't exist
     begin
       # render using ExecJS
-      @result =  KATEX.call("katex.renderToString", string, 
+      @result =  KATEX.call("katex.renderToString", string,
                           {displayMode: @display,  macros: $global_macros})
     rescue SystemExit, Interrupt
       # save cache to disk
@@ -70,14 +70,14 @@ end
 
 def print_stats
   print "             LaTeX: " + 
-        ($count_newly_generated_expressions).to_s + 
-        " expressions rendered (" + $cache.size.to_s + 
+        ($count_newly_generated_expressions).to_s +
+        " expressions rendered (" + $cache.size.to_s +
         " already cached)        \r"
   $stdout.flush
 end
 
-Jekyll::Hooks.register :documents, :post_render do |doc|
-  doc.output = convert(doc)
+Jekyll::Hooks.register :pages, :post_render do |page|
+  page.output = convert(page)
 end
 
 Jekyll::Hooks.register :site, :after_init do |site|
@@ -91,7 +91,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   if $global_macros.size == 0
     puts "             LaTeX: no macros loaded"
   else
-    puts "             LaTeX: " + $global_macros.size.to_s + " macro" + 
+    puts "             LaTeX: " + $global_macros.size.to_s + " macro" +
           ($global_macros.size == 1 ? "" : "s") + " loaded"
   end
 
