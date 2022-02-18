@@ -14,6 +14,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Marks invalid syntax in document
 - Prints location of invalid expression during rendering
 - Tags places within the rendered documents with syntax errors
+- Highly configurable but still having sensible defaults
 
 ## Usage
 
@@ -60,7 +61,16 @@ To clear cached expressions you have to delete `.jektex-cache` directory in your
 project directory.
 
 **Disabling cache**  
-You can disable caching with `disable_disk_cache = false` in `_config.yml`.
+You can disable caching with `disable_disk_cache = false` in `_config.yml`. Cache is
+enabled by default.
+
+**Setting cache location**  
+By default jektex cache will be saved in `.jekyll-cache` directory. This results in its
+deletion when you call `jekyll clean`. To prevent cache deletion or you just want to
+change location of cache from another reason you can achieve that specifying
+`jektex_cache_dir` in `_config.yml`.
+
+For example: `jektex_cache_dir: ".jektex-cache"`
 
 ## Installation
 This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
