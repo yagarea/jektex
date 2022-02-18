@@ -1,7 +1,8 @@
 # Change log
 
 ## 0.0.3
-	make rendering hooks work universally on all pages by default
+	Make rendering hooks work universally on all pages by default
+	Special thanks to Prokop Randáček (rdck.dev) for testing.
 
 ## 0.0.2
 	Gem is published
