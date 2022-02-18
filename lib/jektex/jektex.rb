@@ -3,14 +3,14 @@ require 'digest'
 require 'htmlentities'
 
 
-PATH_TO_JS = __dir__ + "/katex.min.js"
-CACHE_DIR = "./.jektex-cache/"
+PATH_TO_JS = File.join(__dir__, "/katex.min.js")
+DEFAULT_CACHE_DIR = ".jekyll-cache"
 CACHE_FILE = "jektex-cache.marshal"
-PATH_TO_CACHE = CACHE_DIR + CACHE_FILE
 KATEX = ExecJS.compile(open(PATH_TO_JS).read)
 PARSE_ERROR_PLACEHOLDER = "<b style='color: red;'>PARSE ERROR</b>"
 $global_macros = Hash.new
 $count_newly_generated_expressions = 0
+$path_to_cache = File.join(DEFAULT_CACHE_DIR, CACHE_FILE)
 $cache = nil
 $disable_disk_cache = false
 
@@ -51,7 +51,7 @@ def escape_method( type, string, doc_path )
                           {displayMode: @display,  macros: $global_macros})
     rescue SystemExit, Interrupt
       # save cache to disk
-      File.open(PATH_TO_CACHE, "w"){|to_file| Marshal.dump($cache, to_file)}
+      File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
       # this stops jekyll being immune to interupts and kill command
       raise
     rescue Exception => e
@@ -80,6 +80,10 @@ Jekyll::Hooks.register :pages, :post_render do |page|
   page.output = convert(page)
 end
 
+Jekyll::Hooks.register :documents, :post_render do |doc|
+  doc.output = convert(doc)
+end
+
 Jekyll::Hooks.register :site, :after_init do |site|
   # load macros from config file
   if site.config["jektex-macros"] != nil
@@ -95,13 +99,19 @@ Jekyll::Hooks.register :site, :after_init do |site|
           ($global_macros.size == 1 ? "" : "s") + " loaded"
   end
 
+  # check if cache is disable in config
   if site.config["disable_disk_cache"] != nil
     $disable_disk_cache = site.config["disable_disk_cache"]
   end
 
+  # check if there is defined custom cache location in config
+  if site.config["jektex_cache_dir"] != nil
+    $path_to_cache = File.join(site.config["jektex_cache_dir"].to_s, CACHE_FILE)
+  end
+
   # load content of cache file if it exists
-  if(File.exist?(PATH_TO_CACHE))
-    $cache = File.open(PATH_TO_CACHE, "r"){|from_file| Marshal.load(from_file)}
+  if(File.exist?($path_to_cache))
+    $cache = File.open($path_to_cache, "r"){|from_file| Marshal.load(from_file)}
   else
     $cache = Hash.new
   end
@@ -118,7 +128,7 @@ Jekyll::Hooks.register :site, :post_write do
   # check if caching is enabled
   if $disable_disk_cache == false
     # save cache to disk
-    Dir.mkdir(CACHE_DIR) unless File.exists?(CACHE_DIR)
-    File.open(PATH_TO_CACHE, "w"){|to_file| Marshal.dump($cache, to_file)}
+    Dir.mkdir(File.dirname($path_to_cache)) unless File.exists?(File.dirname($path_to_cache))
+    File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
 end
