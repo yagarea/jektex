@@ -8,16 +8,35 @@ DEFAULT_CACHE_DIR = ".jekyll-cache"
 CACHE_FILE = "jektex-cache.marshal"
 KATEX = ExecJS.compile(open(PATH_TO_JS).read)
 PARSE_ERROR_PLACEHOLDER = "<b style='color: red;'>PARSE ERROR</b>"
+FRONT_MATTER_TAG = "jektex"
 $global_macros = Hash.new
 $count_newly_generated_expressions = 0
 $path_to_cache = File.join(DEFAULT_CACHE_DIR, CACHE_FILE)
 $cache = nil
 $disable_disk_cache = false
+$ignored = Array.new
+
+def is_ignored?(page)
+  for patern in $ignored
+    if File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH) then
+      return true
+    end
+  end
+  return false
+end
 
 def convert(page)
+  # check if document is not set to be ignored
+  if page.data[FRONT_MATTER_TAG] == false or is_ignored?(page) then
+    print "IGNORE "
+    puts page.relative_path
+      return page.output
+  end
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
+  # render inline expressions
   post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.path) }
+  # render display expressions
   post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.path) }
   return post
 end
@@ -85,36 +104,43 @@ Jekyll::Hooks.register :documents, :post_render do |doc|
 end
 
 Jekyll::Hooks.register :site, :after_init do |site|
-  # load macros from config file
-  if site.config["jektex-macros"] != nil
-    for macro_definition in site.config["jektex-macros"]
+  # load jektex config from config file
+  config = site.config["jektex"]
+
+  if config["macros"] != nil then
+    for macro_definition in config["macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
   end
   # print macro information
-  if $global_macros.size == 0
+  if $global_macros.size == 0 then
     puts "             LaTeX: no macros loaded"
   else
     puts "             LaTeX: " + $global_macros.size.to_s + " macro" +
           ($global_macros.size == 1 ? "" : "s") + " loaded"
   end
 
-  # check if cache is disable in config
-  if site.config["disable_disk_cache"] != nil
-    $disable_disk_cache = site.config["disable_disk_cache"]
+  # check if there is defined custom cache location in config
+  if config["cache_dir"] != nil then
+    $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE)
   end
 
-  # check if there is defined custom cache location in config
-  if site.config["jektex_cache_dir"] != nil
-    $path_to_cache = File.join(site.config["jektex_cache_dir"].to_s, CACHE_FILE)
+  if config["ignore"] != nil then
+    $ignored = config["ignore"]
   end
 
   # load content of cache file if it exists
-  if(File.exist?($path_to_cache))
+  if(File.exist?($path_to_cache)) then
     $cache = File.open($path_to_cache, "r"){|from_file| Marshal.load(from_file)}
   else
     $cache = Hash.new
   end
+
+  # check if cache is disable in config
+  if site.config["disable_disk_cache"] != nil then
+    $disable_disk_cache = site.config["disable_disk_cache"]
+  end
+
 end
 
 Jekyll::Hooks.register :site, :after_reset do
