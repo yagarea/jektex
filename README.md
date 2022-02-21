@@ -45,19 +45,12 @@ This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser
 so I decided to respect this convention. It makes this plugin more consistent and universal._
 
 
-### Cache control
-
-**Clearing cache**  
-To clear cached expressions you have to delete `.jektex-cache` directory in your 
-project directory.
-
-**Disabling cache**  
-You can disable caching with `disable_disk_cache = false` in `_config.yml`. Cache is
-enabled by default.
-
-
 ### Config
 Jektex si highly configurable from your `_config.yml` file
+
+**Disabling cache**  
+You can disable caching with `disable_disk_cache = true` in `_config.yml`. Cache is
+enabled by default. You can find more information on [Jekyll official website](https://jekyllrb.com/docs/configuration/options/).
 
 **Setting cache location**  
 By default jektex cache will be saved in `.jekyll-cache` directory. This results in it's
@@ -65,7 +58,7 @@ deletion when you call `jekyll clean`. To prevent cache deletion or you just wan
 change location of cache for another reason you can achieve that by specifying
 `cache_dir` in `_config.yml`.
 
-```
+```yaml
 # Jektex cache dir location
 jektex:
   cache_dir: ".jektex-cache"
@@ -74,7 +67,7 @@ jektex:
 **Ignore**  
 By default jektex tries to render LaTeX in all files not excluded by Jekyll. But 
 sometimes you get in situation when you do not want to render some files. For example
-_RSS feed_ with excerpts containing Latex. As a solution jektex offers `ignore` option.
+_RSS feed_ with excerpts containing LaTeX. As a solution jektex offers `ignore` option.
 You can use conventional wild cards using `*`. For example:
 ```yaml
 # Jektex ignore files
@@ -105,7 +98,7 @@ jektex:
     - ["\\C", "\\mathbb{C}"]
 ```
 Having no configuration is equivalent to this:
-```
+```yaml
 jektex:
   cache_dir: ".jekyll-cache"
   ignore: []
