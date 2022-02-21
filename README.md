@@ -44,15 +44,6 @@ display mode?
 This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works 
 so I decided to respect this convention. It makes this plugin more consistent and universal._
 
-### Macros
-You can define global macros in your `_config.yml` file:
-
-```yaml
-# Jektex macros
-jektex-macros:
-    - ["\\Q", "\\mathbb{Q}"]
-    - ["\\C", "\\mathbb{C}"]
-```
 
 ### Cache control
 
@@ -64,13 +55,62 @@ project directory.
 You can disable caching with `disable_disk_cache = false` in `_config.yml`. Cache is
 enabled by default.
 
-**Setting cache location**  
-By default jektex cache will be saved in `.jekyll-cache` directory. This results in its
-deletion when you call `jekyll clean`. To prevent cache deletion or you just want to
-change location of cache from another reason you can achieve that specifying
-`jektex_cache_dir` in `_config.yml`.
 
-For example: `jektex_cache_dir: ".jektex-cache"`
+### Config
+Jektex si highly configurable from your `_config.yml` file
+
+**Setting cache location**  
+By default jektex cache will be saved in `.jekyll-cache` directory. This results in it's
+deletion when you call `jekyll clean`. To prevent cache deletion or you just want to
+change location of cache for another reason you can achieve that by specifying
+`cache_dir` in `_config.yml`.
+
+```
+# Jektex cache dir location
+jektex:
+  cache_dir: ".jektex-cache"
+```
+
+**Ignore**  
+By default jektex tries to render LaTeX in all files not excluded by Jekyll. But 
+sometimes you get in situation when you do not want to render some files. For example
+_RSS feed_ with excerpts containing Latex. As a solution jektex offers `ignore` option.
+You can use conventional wild cards using `*`. For example:
+```yaml
+# Jektex ignore files
+jektex:
+  ignore: ["*.xml", "README.md", "_drafts/*" ]
+```
+This example configuration ignores all `.xml` files, `README.md` and all files 
+in `_drafts` directory.
+
+**Macros**  
+You can define global macros like this:
+```yaml
+# Jektex macros
+jektex:
+  macros:
+    - ["\\Q", "\\mathbb{Q}"]
+    - ["\\C", "\\mathbb{C}"]
+```
+
+**Complete examples**  
+Recommended config:
+```yaml
+jektex:
+  cache_dir: ".jektex-cache"
+  ignore: ["*.xml"]
+  macros:
+    - ["\\Q", "\\mathbb{Q}"]
+    - ["\\C", "\\mathbb{C}"]
+```
+Having no configuration is equivalent to this:
+```
+jektex:
+  cache_dir: ".jekyll-cache"
+  ignore: []
+  macros: []
+```
 
 ## Installation
 This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
@@ -100,6 +140,6 @@ and do not forget to add `katex.min.css` to you html head:
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
-It is much better practice to download **css** file and loaded as an asset from your server directly.
+It is much better practice to download **css** file and load it as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
 
