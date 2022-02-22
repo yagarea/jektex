@@ -27,11 +27,10 @@ end
 
 def convert(page)
   # check if document is not set to be ignored
-  if page.data[FRONT_MATTER_TAG] == false or is_ignored?(page) then
-    print "IGNORE "
-    puts page.relative_path
-      return page.output
+  if page.data == nil or is_ignored?(page) or page.data[FRONT_MATTER_TAG] == "false" then
+    return page.output
   end
+
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
@@ -71,7 +70,7 @@ def escape_method( type, string, doc_path )
     rescue SystemExit, Interrupt
       # save cache to disk
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
-      # this stops jekyll being immune to interupts and kill command
+      # this stops jekyll being immune to interrupts and kill command
       raise
     rescue Exception => e
       # catch parse error
@@ -104,14 +103,20 @@ Jekyll::Hooks.register :documents, :post_render do |doc|
 end
 
 Jekyll::Hooks.register :site, :after_init do |site|
-  # load jektex config from config file
-  config = site.config["jektex"]
-
+  if site.config["jektex"] == nil then
+    # if no config is defined make empty one
+    config = Hash.new
+  else
+    # load jektex config from config file
+    config = site.config["jektex"]
+  end
+  # load macros
   if config["macros"] != nil then
     for macro_definition in config["macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
   end
+
   # print macro information
   if $global_macros.size == 0 then
     puts "             LaTeX: no macros loaded"
@@ -125,6 +130,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
     $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE)
   end
 
+  # load list of ignored files
   if config["ignore"] != nil then
     $ignored = config["ignore"]
   end
