@@ -21,7 +21,6 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 ### Notation
 **Inline formula**  
 Put formula between two pairs of dolar signs (`$$`) inside of paragraph.
-
 ```latex
 Lorem ipsum dolor sit amet, consectetur $$e^{i\theta}=\cos(\theta)+i\sin(\theta)$$
 adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -44,7 +43,6 @@ display mode?
 This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works 
 so I decided to respect this convention. It makes this plugin more consistent and universal._
 
-
 ### Config
 Jektex si highly configurable from your `_config.yml` file
 
@@ -57,7 +55,6 @@ By default jektex cache will be saved in `.jekyll-cache` directory. This results
 deletion when you call `jekyll clean`. To prevent cache deletion or you just want to
 change location of cache for another reason you can achieve that by specifying
 `cache_dir` in `_config.yml`.
-
 ```yaml
 # Jektex cache dir location
 jektex:
@@ -74,8 +71,23 @@ You can use conventional wild cards using `*`. For example:
 jektex:
   ignore: ["*.xml", "README.md", "_drafts/*" ]
 ```
+
 This example configuration ignores all `.xml` files, `README.md` and all files 
 in `_drafts` directory.
+
+Another option for ignoring specific posts is setting `jektex` tag in front matter of
+post to `false`. For example:
+```yaml
+---
+title: "How Jektex works"
+category: "Development"
+jektex: false
+layout: post
+---
+```
+
+Setting `jektex` tag to true or not setting at all will result in jektex rendering LaTeX
+expressions in that post.
 
 **Macros**  
 You can define global macros like this:
@@ -110,7 +122,6 @@ This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
 
 **Using bundler**  
 Add `jektex` to your `Gemfile` like this:
-
 ```ruby
 group :jekyll_plugins do
     gem "jektex"
@@ -135,4 +146,8 @@ and do not forget to add `katex.min.css` to you html head:
 ```
 It is much better practice to download **css** file and load it as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
+
+## Contributions and bug reports
+Feel free to repost any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
+I am opened for pull requests as well.
 
