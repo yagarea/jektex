@@ -97,6 +97,9 @@ jektex:
     - ["\\Q", "\\mathbb{Q}"]
     - ["\\C", "\\mathbb{C}"]
 ```
+And yes you have to escape backlash(`\`) with another backlash. This is caused by
+[yaml definition](https://yaml.org/).
+
 
 **Complete examples**  
 Recommended config:
