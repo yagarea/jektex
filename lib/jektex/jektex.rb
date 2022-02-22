@@ -25,7 +25,7 @@ def is_ignored?(page)
   return false
 end
 
-def convert(page)
+def render(page)
   # check if document is not set to be ignored
   if page.data == nil or is_ignored?(page) or page.data[FRONT_MATTER_TAG] == "false" then
     return page.output
@@ -95,11 +95,11 @@ def print_stats
 end
 
 Jekyll::Hooks.register :pages, :post_render do |page|
-  page.output = convert(page)
+  page.output = render(page)
 end
 
 Jekyll::Hooks.register :documents, :post_render do |doc|
-  doc.output = convert(doc)
+  doc.output = render(doc)
 end
 
 Jekyll::Hooks.register :site, :after_init do |site|
