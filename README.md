@@ -13,7 +13,6 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Does not interfere with Jekyll workflow and project structure
 - Marks invalid syntax in document
 - Prints location of invalid expression during rendering
-- Tags places within the rendered documents with syntax errors
 - Highly configurable but still having sensible defaults
 
 ## Usage
