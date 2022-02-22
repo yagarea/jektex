@@ -85,7 +85,7 @@ layout: post
 ---
 ```
 
-Setting `jektex` tag to true or not setting at all will result in jektex rendering LaTeX
+Setting `jektex` tag to `true` or not setting at all will result in jektex rendering LaTeX
 expressions in that post.
 
 **Macros**  
@@ -149,4 +149,3 @@ You can find more information on [KaTeX's website](https://katex.org/docs/browse
 ## Contributions and bug reports
 Feel free to repost any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
 I am opened for pull requests as well.
-
