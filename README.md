@@ -146,7 +146,7 @@ and do not forget to add `katex.min.css` to you html head:
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
-It is much better practice to download **css** file and load it as an asset from your server directly.
+It is much better practice to download [**css** file](https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css) and load it as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
 
 ## Contributions and bug reports
