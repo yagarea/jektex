@@ -22,9 +22,9 @@ $disable_disk_cache = false
 $ignored = Array.new
 
 def get_list_of_updated_global_macros(current_macros, cached_global_macros)
-  if cached_global_macros == nil and current_macros == nil then
+  if cached_global_macros.nil? and current_macros.nil? then
     return Array.new
-  elsif cached_global_macros == nil then
+  elsif cached_global_macros.nil? then
     return current_macros.keys
   else
     return cached_global_macros.keys
@@ -34,27 +34,21 @@ def get_list_of_updated_global_macros(current_macros, cached_global_macros)
   macro_set.add(current_macros.keys)
   list_of_all_macros = macro_set.to_a
   for m in list_of_all_macros
-    if cached[m] == current_macros[m] then
-      macro_set.subtract(m)
-    end
+    macro_set.subtract(m) if cached[m] == current_macros[m]
   end
   return macro_set.to_a
 end
 
 def is_ignored?(page)
   for patern in $ignored
-    if File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH) then
-      return true
-    end
+    return true if File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH)
   end
   return false
 end
 
 def contains_updated_global_macro?(expression)
   for m in $updated_global_macros
-    if expression[m] then
-        return true
-    end
+    return true if expression[m]
   end
   return false
 end
@@ -69,10 +63,7 @@ end
 
 def render(page)
   # check if document is not set to be ignored
-  if page.data == nil or is_ignored?(page) or page.data[FRONT_MATTER_TAG] == "false" then
-    return page.output
-  end
-
+  return page.output if page.data == nil or is_ignored?(page) or page.data[FRONT_MATTER_TAG] == "false"
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
@@ -117,6 +108,7 @@ def escape_method( type, string, doc_path )
       raise
     rescue ExecJS::ProgramError => pe
       # catch parse error
+      puts e.class
       puts "\e[31m " + pe.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
       return PARSE_ERROR_PLACEHOLDER
     end
@@ -143,9 +135,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   config = site.config["jektex"] || Hash.new
 
   # check if there is defined custom cache location in config
-  if config["cache_dir"] != nil then
-    $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE)
-  end
+  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if !config["cache_dir"].nil?
 
   # load content of cache file if it exists
   if(File.exist?($path_to_cache)) then
@@ -155,12 +145,10 @@ Jekyll::Hooks.register :site, :after_init do |site|
   end
 
   # check if cache is disable in config
-  if site.config["disable_disk_cache"] != nil then
-    $disable_disk_cache = site.config["disable_disk_cache"]
-  end
+  $disable_disk_cache = site.config["disable_disk_cache"] if !site.config["disable_disk_cache"].nil?
 
   # load macros
-  if config["macros"] != nil then
+  if !config["macros"].nil? then
     for macro_definition in config["macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
@@ -179,7 +167,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
 
 
   # load list of ignored files
-  if config["ignore"] != nil then
+  if !config["ignore"].nil? then
     $ignored = config["ignore"]
   end
 end
