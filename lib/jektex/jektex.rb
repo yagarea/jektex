@@ -115,9 +115,9 @@ def escape_method( type, string, doc_path )
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
       # this stops jekyll being immune to interrupts and kill command
       raise
-    rescue Exception => e
+    rescue ExecJS::ProgramError => pe
       # catch parse error
-      puts "\e[31m " + e.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
+      puts "\e[31m " + pe.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
       return PARSE_ERROR_PLACEHOLDER
     end
     # save to cache
@@ -139,13 +139,8 @@ Jekyll::Hooks.register :documents, :post_render do |doc|
 end
 
 Jekyll::Hooks.register :site, :after_init do |site|
-  if site.config["jektex"] == nil then
-    # if no config is defined make empty one
-    config = Hash.new
-  else
-    # load jektex config from config file
-    config = site.config["jektex"]
-  end
+  # load jektex config from config file and if no config is defined make empty one
+  config = site.config["jektex"] || Hash.new
 
   # check if there is defined custom cache location in config
   if config["cache_dir"] != nil then
