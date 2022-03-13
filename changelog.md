@@ -3,7 +3,7 @@
 ## 0.0.5
 - redesign configuration. No it is more intuitive and cleaner
 - make new option for ignoring specific files
-- adds new `jektex` tag for enabling/disabling jektex rendering in posts.
+- adds new `jektex` tag for enabling/disabling jektex rendering in front matter.
 
 ## 0.0.4
 - Make cache location configurable
