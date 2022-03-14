@@ -55,17 +55,17 @@ def render(page)
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
   post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
-  # render display expressions
+  # render display mode expressions
   post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.relative_path) }
   return post
 end
 
-def escape_method( type, string, doc_path )
-  # detect if expression is display view
-  display = type.downcase =~ /\[/
+def escape_method( type, expression, doc_path )
+  # detect if expression is in display mode
+  is_in_display_mode? = type.downcase =~ /\[/
 
   # generate a hash from the math expression
-  expression_hash = Digest::SHA2.hexdigest(string) + display.to_s
+  expression_hash = Digest::SHA2.hexdigest(string) + is_in_display_mode?.to_s
 
   # use it if it exists
   if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(string))
@@ -79,8 +79,8 @@ def escape_method( type, string, doc_path )
     # create the cache directory, if it doesn't exist
     begin
       # render using ExecJS
-      result =  KATEX.call("katex.renderToString", string,
-                          {displayMode: display,  macros: $global_macros})
+      result =  KATEX.call("katex.renderToString", expression,
+                          {is_in_display_mode?Mode: is_in_display_mode?,  macros: $global_macros})
     rescue SystemExit, Interrupt
       # save cache to disk
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
