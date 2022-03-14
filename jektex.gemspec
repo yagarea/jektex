@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   if spec.respond_to?(:metadata)
     spec.metadata = {
         "bug_tracker_uri"   => "https://github.com/yagarea/jektex/issues",
-        "documentation_uri" => "https://github.com/yagarea/jektex",
+        "documentation_uri" => "https://github.com/yagarea/jektex/blob/master/README.md",
         "homepage_uri"      => "https://github.com/yagarea/jektex",
         "source_code_uri"   => "https://github.com/yagarea/jektex",
         "changelog_uri"     => "https://github.com/yagarea/jektex/blob/master/changelog.md"
