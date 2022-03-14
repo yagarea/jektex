@@ -46,10 +46,10 @@ def contains_updated_global_macro?(expression)
 end
 
 def print_stats
-  print "             LaTeX: " +
-        ($count_newly_generated_expressions).to_s +
-        " expressions rendered (" + $cache.size.to_s +
-        " already cached)        \r"
+  indent = " " * 13
+  print "#{indent}LaTeX: " \
+  "#{$count_newly_generated_expressions} expressions rendered " \
+  "(#{$cache.size} already cached)".ljust(72) + "\r"
   $stdout.flush
 end
 
