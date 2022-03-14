@@ -98,8 +98,7 @@ jektex:
     - ["\\C", "\\mathbb{C}"]
 ```
 And yes you have to escape backlash(`\`) with another backlash. This is caused by
-[yaml definition](https://yaml.org/). YOU SHOULD ALWAYS delete jektex cache after changing
-definition of a macro for change to take effect.
+[yaml definition](https://yaml.org/).
 
 **Complete examples**  
 Recommended config:
