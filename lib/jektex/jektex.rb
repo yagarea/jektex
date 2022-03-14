@@ -50,7 +50,7 @@ end
 
 def render(page)
   # check if document is not set to be ignored
-  return page.output if !page.data or is_ignored?(page)
+  return page.output if !page.data || is_ignored?(page)
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
