@@ -62,13 +62,13 @@ end
 
 def escape_method( type, expression, doc_path )
   # detect if expression is in display mode
-  is_in_display_mode? = type.downcase =~ /\[/
+  is_in_display_mode = type.downcase =~ /\[/
 
   # generate a hash from the math expression
-  expression_hash = Digest::SHA2.hexdigest(string) + is_in_display_mode?.to_s
+  expression_hash = Digest::SHA2.hexdigest(expression) + is_in_display_mode.to_s
 
   # use it if it exists
-  if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(string))
+  if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(expression))
     # check if expressin conains updated macro
     $count_newly_generated_expressions += 1
     print_stats
@@ -80,7 +80,7 @@ def escape_method( type, expression, doc_path )
     begin
       # render using ExecJS
       result =  KATEX.call("katex.renderToString", expression,
-                          {is_in_display_mode?Mode: is_in_display_mode?,  macros: $global_macros})
+                          { displayMode: is_in_display_mode,  macros: $global_macros})
     rescue SystemExit, Interrupt
       # save cache to disk
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
