@@ -167,7 +167,7 @@ Jekyll::Hooks.register :site, :post_write do
     # save global macros to cache
     $cache["cached_global_macros"] = $global_macros
     # save cache to disk
-    Dir.mkdir(File.dirname($path_to_cache)) unless File.exists?(File.dirname($path_to_cache))
+    Pathname.new($path_to_cache).dirname.mkpath
     File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
 end
