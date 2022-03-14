@@ -22,13 +22,9 @@ $disable_disk_cache = false
 $ignored = Array.new
 
 def get_list_of_updated_global_macros(current_macros, cached_global_macros)
-  if cached_global_macros.nil? and current_macros.nil? then
-    return Array.new
-  elsif cached_global_macros.nil? then
-    return current_macros.keys
-  elsif current_macros.nil? then
-    return cached_global_macros.keys
-  end
+  return Array.new if cached_global_macros.nil? and current_macros.nil?
+  return current_macros.keys if cached_global_macros.nil?
+  return cached_global_macros.keys if current_macros.nil?
 
   macro_set = Set.new(cached_global_macros.keys)
   macro_set.merge(current_macros.keys)
@@ -158,9 +154,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   end
 
   # load list of ignored files
-  if !config["ignore"].nil? then
-    $ignored = config["ignore"]
-  end
+  $ignored = config["ignore"] if !config["ignore"].nil?
 end
 
 Jekyll::Hooks.register :site, :after_reset do
@@ -173,8 +167,9 @@ Jekyll::Hooks.register :site, :post_write do
   print "\n"
   # check if caching is enabled
   if !$disable_disk_cache then
-    # save cache to disk
+    # save global macros to cache
     $cache["cached_global_macros"] = $global_macros
+    # save cache to disk
     Dir.mkdir(File.dirname($path_to_cache)) unless File.exists?(File.dirname($path_to_cache))
     File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
