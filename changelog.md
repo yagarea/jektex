@@ -1,5 +1,8 @@
 # Change log
 
+## 0.0.7
+- Fix crashing at start in some setups
+
 ## 0.0.6
 - Implement macro update detection so you do not have to delete cache after updating macros.
 - Log number of updated macros during project loading configuration.
