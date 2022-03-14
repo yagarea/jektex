@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/jektex.svg)](https://rubygems.org/gems/jektex)
+
 # Jektex
 Jekyll plugin for blazing fast server side cached LaTeX rendering with support of macros.
 Enjoy comfort of latex and markdown without cluttering your site with bloated javascript.
