@@ -22,15 +22,12 @@ $disable_disk_cache = false
 $ignored = Array.new
 
 def get_list_of_updated_global_macros(current_macros, cached_global_macros)
-  return Array.new if cached_global_macros.nil? and current_macros.nil?
+  return Array.new if cached_global_macros.nil? && current_macros.nil?
   return current_macros.keys if cached_global_macros.nil?
   return cached_global_macros.keys if current_macros.nil?
 
-  macro_set = Set.new(cached_global_macros.keys)
-  macro_set.merge(current_macros.keys)
-  for m in macro_set.to_a
-    macro_set.delete(m) if cached_global_macros[m] == current_macros[m]
-  end
+  macro_set = Set.new(cached_global_macros.keys + current_macros.keys)
+  macro_set.delete_if { |m| cached_global_macros[m] == current_macros[m] }
   return macro_set.to_a
 end
 
@@ -49,7 +46,7 @@ def contains_updated_global_macro?(expression)
 end
 
 def print_stats
-  print "             LaTeX: " + 
+  print "             LaTeX: " +
         ($count_newly_generated_expressions).to_s +
         " expressions rendered (" + $cache.size.to_s +
         " already cached)        \r"
@@ -76,7 +73,7 @@ def escape_method( type, string, doc_path )
   @expression_hash = Digest::SHA2.hexdigest(string) + @display.to_s
 
   # use it if it exists
-  if($cache.has_key?(@expression_hash) and not contains_updated_global_macro?(string)) then
+  if($cache.has_key?(@expression_hash) && !contains_updated_global_macro?(string)) then
     # check if expressin conains updated macro
     $count_newly_generated_expressions += 1
     print_stats
@@ -108,7 +105,6 @@ def escape_method( type, string, doc_path )
   end
 end
 
-
 Jekyll::Hooks.register :pages, :post_render do |page|
   page.output = render(page)
 end
@@ -122,7 +118,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   config = site.config["jektex"] || Hash.new
 
   # check if there is defined custom cache location in config
-  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if !config["cache_dir"].nil?
+  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) unless config["cache_dir"].nil?
 
   # load content of cache file if it exists
   if(File.exist?($path_to_cache)) then
@@ -132,10 +128,10 @@ Jekyll::Hooks.register :site, :after_init do |site|
   end
 
   # check if cache is disable in config
-  $disable_disk_cache = site.config["disable_disk_cache"] if !site.config["disable_disk_cache"].nil?
+  $disable_disk_cache = site.config["disable_disk_cache"] unless site.config["disable_disk_cache"].nil?
 
   # load macros
-  if !config["macros"].nil? then
+  unless config["macros"].nil? then
     for macro_definition in config["macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
@@ -154,7 +150,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   end
 
   # load list of ignored files
-  $ignored = config["ignore"] if !config["ignore"].nil?
+  $ignored = config["ignore"] unless config["ignore"].nil?
 end
 
 Jekyll::Hooks.register :site, :after_reset do
