@@ -67,22 +67,15 @@ def render(page)
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
-  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.path) }
+  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
   # render display expressions
-  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.path) }
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.relative_path) }
   return post
 end
 
 def escape_method( type, string, doc_path )
-  @display = false
-
   # detect if expression is display view
-  case type.downcase
-    when /\(/
-      @display = false
-    else /\[/
-      @display = true
-  end
+  @display = type.downcase =~ /\[/
 
   # generate a hash from the math expression
   @expression_hash = Digest::SHA2.hexdigest(string) + @display.to_s
