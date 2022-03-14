@@ -108,7 +108,6 @@ def escape_method( type, string, doc_path )
       raise
     rescue ExecJS::ProgramError => pe
       # catch parse error
-      puts e.class
       puts "\e[31m " + pe.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
       return PARSE_ERROR_PLACEHOLDER
     end
@@ -162,9 +161,9 @@ Jekyll::Hooks.register :site, :after_init do |site|
     puts "             LaTeX: no macros loaded"
   else
     puts "             LaTeX: " + $global_macros.size.to_s + " macro" +
-          ($global_macros.size == 1 ? "" : "s") + " loaded"
+      ($global_macros.size == 1 ? "" : "s") + " loaded" +
+      (" (" + $updated_global_macros.size.to_s + " updated)")
   end
-
 
   # load list of ignored files
   if !config["ignore"].nil? then
