@@ -9,6 +9,7 @@ CACHE_FILE = "jektex-cache.marshal"
 KATEX = ExecJS.compile(open(PATH_TO_JS).read)
 PARSE_ERROR_PLACEHOLDER = "<b style='color: red;'>PARSE ERROR</b>"
 FRONT_MATTER_TAG = "jektex"
+INDENT = " " * 13
 
 $global_macros = Hash.new
 $updated_global_macros = Array.new
@@ -22,9 +23,9 @@ $disable_disk_cache = false
 $ignored = Array.new
 
 def get_list_of_updated_global_macros(current_macros, cached_global_macros)
-  return Array.new if cached_global_macros.nil? && current_macros.nil?
-  return current_macros.keys if cached_global_macros.nil?
-  return cached_global_macros.keys if current_macros.nil?
+  return Array.new unless cached_global_macros || current_macros
+  return current_macros.keys unless cached_global_macros
+  return cached_global_macros.keys unless current_macros
 
   macro_set = Set.new(cached_global_macros.keys + current_macros.keys)
   macro_set.delete_if { |m| cached_global_macros[m] == current_macros[m] }
@@ -32,6 +33,7 @@ def get_list_of_updated_global_macros(current_macros, cached_global_macros)
 end
 
 def is_ignored?(page)
+  return true if page.data[FRONT_MATTER_TAG] == "false"
   for patern in $ignored
     return true if File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH)
   end
@@ -47,7 +49,7 @@ end
 
 def print_stats
   indent = " " * 13
-  print "#{indent}LaTeX: " \
+  print "#{INDENT}LaTeX: " \
   "#{$count_newly_generated_expressions} expressions rendered " \
   "(#{$cache.size} already cached)".ljust(72) + "\r"
   $stdout.flush
@@ -55,7 +57,7 @@ end
 
 def render(page)
   # check if document is not set to be ignored
-  return page.output if page.data == nil or is_ignored?(page) or page.data[FRONT_MATTER_TAG] == "false"
+  return page.output if !page.data or is_ignored?(page)
   # convert HTML entities back to characters
   post = HTMLEntities.new.decode(page.output.to_s)
   # render inline expressions
@@ -73,7 +75,7 @@ def escape_method( type, string, doc_path )
   @expression_hash = Digest::SHA2.hexdigest(string) + @display.to_s
 
   # use it if it exists
-  if($cache.has_key?(@expression_hash) && !contains_updated_global_macro?(string)) then
+  if($cache.has_key?(@expression_hash) && !contains_updated_global_macro?(string))
     # check if expressin conains updated macro
     $count_newly_generated_expressions += 1
     print_stats
@@ -118,20 +120,20 @@ Jekyll::Hooks.register :site, :after_init do |site|
   config = site.config["jektex"] || Hash.new
 
   # check if there is defined custom cache location in config
-  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) unless config["cache_dir"].nil?
+  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if config.has_key?("cache_dir")
 
   # load content of cache file if it exists
-  if(File.exist?($path_to_cache)) then
+  if File.exist?($path_to_cache)
     $cache = File.open($path_to_cache, "r"){|from_file| Marshal.load(from_file)}
   else
     $cache = Hash.new
   end
 
   # check if cache is disable in config
-  $disable_disk_cache = site.config["disable_disk_cache"] unless site.config["disable_disk_cache"].nil?
+  $disable_disk_cache = site.config["disable_disk_cache"] if site.config.has_key?("disable_disk_cache")
 
   # load macros
-  unless config["macros"].nil? then
+  if config.has_key?("macros")
     for macro_definition in config["macros"]
       $global_macros[macro_definition[0]] = macro_definition[1]
     end
@@ -139,18 +141,17 @@ Jekyll::Hooks.register :site, :after_init do |site|
 
   # make list of updated macros
   $updated_global_macros = get_list_of_updated_global_macros($global_macros, $cache["cached_global_macros"])
-
   # print macro information
-  if $global_macros.size == 0 then
-    puts "             LaTeX: no macros loaded"
+  if $global_macros.empty?
+    puts "#{INDENT}LaTeX: no macros loaded"
   else
-    puts "             LaTeX: " + $global_macros.size.to_s + " macro" +
+    puts "#{INDENT}LaTeX: #{$global_macros.size} macro" +
       ($global_macros.size == 1 ? "" : "s") + " loaded" +
-      ($updated_global_macros.size > 0 ? " (" + $updated_global_macros.size.to_s + " updated)" : "")
+      ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)")
   end
 
   # load list of ignored files
-  $ignored = config["ignore"] unless config["ignore"].nil?
+  $ignored = config["ignore"] if config.has_key?("ignore")
 end
 
 Jekyll::Hooks.register :site, :after_reset do
@@ -162,7 +163,7 @@ Jekyll::Hooks.register :site, :post_write do
   # print new line to prevent overwriting previous output
   print "\n"
   # check if caching is enabled
-  if !$disable_disk_cache then
+  if !$disable_disk_cache
     # save global macros to cache
     $cache["cached_global_macros"] = $global_macros
     # save cache to disk
