@@ -26,15 +26,14 @@ def get_list_of_updated_global_macros(current_macros, cached_global_macros)
     return Array.new
   elsif cached_global_macros.nil? then
     return current_macros.keys
-  else
+  elsif current_macros.nil? then
     return cached_global_macros.keys
   end
 
-  macro_set = Set.new(cached.keys)
-  macro_set.add(current_macros.keys)
-  list_of_all_macros = macro_set.to_a
-  for m in list_of_all_macros
-    macro_set.subtract(m) if cached[m] == current_macros[m]
+  macro_set = Set.new(cached_global_macros.keys)
+  macro_set.merge(current_macros.keys)
+  for m in macro_set.to_a
+    macro_set.delete(m) if cached_global_macros[m] == current_macros[m]
   end
   return macro_set.to_a
 end
@@ -155,7 +154,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   else
     puts "             LaTeX: " + $global_macros.size.to_s + " macro" +
       ($global_macros.size == 1 ? "" : "s") + " loaded" +
-      (" (" + $updated_global_macros.size.to_s + " updated)")
+      ($updated_global_macros.size > 0 ? " (" + $updated_global_macros.size.to_s + " updated)" : "")
   end
 
   # load list of ignored files
@@ -173,9 +172,9 @@ Jekyll::Hooks.register :site, :post_write do
   # print new line to prevent overwriting previous output
   print "\n"
   # check if caching is enabled
-  if $disable_disk_cache == false
-    $cache["cached_global_macros"] = $global_macros
+  if !$disable_disk_cache then
     # save cache to disk
+    $cache["cached_global_macros"] = $global_macros
     Dir.mkdir(File.dirname($path_to_cache)) unless File.exists?(File.dirname($path_to_cache))
     File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
