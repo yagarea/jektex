@@ -62,25 +62,25 @@ end
 
 def escape_method( type, string, doc_path )
   # detect if expression is display view
-  @display = type.downcase =~ /\[/
+  display = type.downcase =~ /\[/
 
   # generate a hash from the math expression
-  @expression_hash = Digest::SHA2.hexdigest(string) + @display.to_s
+  expression_hash = Digest::SHA2.hexdigest(string) + display.to_s
 
   # use it if it exists
-  if($cache.has_key?(@expression_hash) && !contains_updated_global_macro?(string))
+  if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(string))
     # check if expressin conains updated macro
     $count_newly_generated_expressions += 1
     print_stats
-    return $cache[@expression_hash]
+    return $cache[expression_hash]
 
   # else generate one and store it
   else
     # create the cache directory, if it doesn't exist
     begin
       # render using ExecJS
-      @result =  KATEX.call("katex.renderToString", string,
-                          {displayMode: @display,  macros: $global_macros})
+      result =  KATEX.call("katex.renderToString", string,
+                          {displayMode: display,  macros: $global_macros})
     rescue SystemExit, Interrupt
       # save cache to disk
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
@@ -92,11 +92,11 @@ def escape_method( type, string, doc_path )
       return PARSE_ERROR_PLACEHOLDER
     end
     # save to cache
-    $cache[@expression_hash] = @result
+    $cache[expression_hash] = @result
     # update count of newly generated expressions
     $count_newly_generated_expressions += 1
     print_stats
-    return @result
+    return result
   end
 end
 
@@ -117,7 +117,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
 
   # load content of cache file if it exists
   if File.exist?($path_to_cache)
-    $cache = File.open($path_to_cache, "r"){|from_file| Marshal.load(from_file)}
+    $cache = File.open($path_to_cache, "r"){ |from_file| Marshal.load(from_file)}
   else
     $cache = Hash.new
   end
