@@ -1,7 +1,7 @@
 # Change log
 
 ## 0.0.6
-- Implement upgrade macro detection so you do not have to delete cache after updating macros.
+- Implement macro update detection so you do not have to delete cache after updating macros.
 - Log number of updated macros during project loading configuration.
 - Optimisation of loading saved cache and rendering.
 - Now printing relative path to project of file containing syntax error.
