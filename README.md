@@ -14,6 +14,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Marks invalid syntax in document
 - Prints location of invalid expression during rendering
 - Highly configurable but still having sensible defaults
+- Makes sure that cache does not contain expression rendered with outdated configuration
 
 ## Usage
 
