@@ -34,21 +34,14 @@ end
 
 def is_ignored?(page)
   return true if page.data[FRONT_MATTER_TAG] == "false"
-  for patern in $ignored
-    return true if File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH)
-  end
-  return false
+  return $ignored.any? { |patern| File.fnmatch?(patern, page.relative_path, File::FNM_DOTMATCH) }
 end
 
 def contains_updated_global_macro?(expression)
-  for m in $updated_global_macros
-    return true if expression[m]
-  end
-  return false
+  return $updated_global_macros.any? { |m| expression[m] }
 end
 
 def print_stats
-  indent = " " * 13
   print "#{INDENT}LaTeX: " \
   "#{$count_newly_generated_expressions} expressions rendered " \
   "(#{$cache.size} already cached)".ljust(72) + "\r"
@@ -166,8 +159,9 @@ Jekyll::Hooks.register :site, :post_write do
   if !$disable_disk_cache
     # save global macros to cache
     $cache["cached_global_macros"] = $global_macros
-    # save cache to disk
+    # create cache path
     Pathname.new($path_to_cache).dirname.mkpath
+    # save cache to disk
     File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
   end
 end
