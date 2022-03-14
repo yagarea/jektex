@@ -7,6 +7,7 @@
 - Now printing relative path to project of file containing syntax error.
 - Major refactoring and better commenting of code.
 - Fix all rendering issues being treated as syntax errors. Now render issues are much finer and informative.
+- Now you can set cache path throw several nested not existing directories and jektex will create them.
 
 ## 0.0.5
 - Redesign configuration. No it is more intuitive and cleaner.
