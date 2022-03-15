@@ -92,7 +92,7 @@ def escape_method( type, expression, doc_path )
       return PARSE_ERROR_PLACEHOLDER
     end
     # save to cache
-    $cache[expression_hash] = @result
+    $cache[expression_hash] = result
     # update count of newly generated expressions
     $count_newly_generated_expressions += 1
     print_stats
