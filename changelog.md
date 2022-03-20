@@ -13,7 +13,7 @@
 - Now you can set cache path throw several nested not existing directories and jektex will create them.
 
 ## 0.0.5
-- Redesign configuration. No it is more intuitive and cleaner.
+- Redesign configuration. Now it is more intuitive and cleaner.
 - Make new option for ignoring specific files.
 - Adds new `jektex` tag for enabling/disabling jektex rendering in front matter.
 
