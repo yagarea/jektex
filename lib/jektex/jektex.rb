@@ -104,7 +104,7 @@ def escape_method( type, expression, doc_path )
       raise
     rescue ExecJS::ProgramError => pe
       # catch parse error
-      puts "\e[31m " + pe.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
+      puts "\e[31m #{pe.message.gsub("ParseError: ", "")}\n\t#{doc_path}\e[0m"
       # render expression with error highlighting enabled
       return KATEX.call("katex.renderToString", expression,
                           { displayMode: is_in_display_mode,
@@ -170,8 +170,8 @@ Jekyll::Hooks.register :site, :after_init do |site|
   if $global_macros.empty?
     puts "#{INDENT}LaTeX: no macros loaded"
   else
-    puts "#{INDENT}LaTeX: #{$global_macros.size} macro" +
-      ($global_macros.size == 1 ? "" : "s") + " loaded" +
+    puts "#{INDENT}LaTeX: #{$global_macros.size} macro" \
+      "#{$global_macros.size == 1 ? "" : "s"} loaded" +
       ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)")
   end
 
