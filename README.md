@@ -20,7 +20,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 
 ## Usage
 
-### Notation
+### Kramdown notation
 **Inline formula**  
 Put formula between two pairs of dolar signs (`$$`) inside of paragraph.
 ```latex
@@ -44,6 +44,27 @@ _Why Jektex does not use conventional single `$` for inline formulas and double 
 display mode?  
 This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works 
 so I decided to respect this convention. It makes this plugin more consistent and universal._
+
+
+### LaTex math mode notation
+**Inline formula**  
+Put formula between two escaped brackets `\(` `\)`.
+```latex
+Lorem ipsum dolor sit amet, consectetur \(e^{i\theta}=\cos(\theta)+i\sin(\theta)\)
+adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+```
+
+**Display formula**  
+Put formula between two escaped square brackets `\[` `\]`.
+```latex
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua.
+
+\[ \left[ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right] \Psi(\mathbf{r},t) \]
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+ea commodo consequat.
+```
 
 ### Config
 Jektex si highly configurable from your `_config.yml` file
