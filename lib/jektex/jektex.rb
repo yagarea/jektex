@@ -47,7 +47,22 @@ def print_stats
   $stdout.flush
 end
 
-def render(page)
+#######################################################################################
+# Render
+
+def render_latex_notation(page)
+  # check if document is not set to be ignored
+  return page.content if !page.data || is_ignored?(page)
+  # convert HTML entities back to characters
+  post = HTMLEntities.new.decode(page.content.to_s)
+  # render inline expressions
+  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
+  # render display mode expressions
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.relative_path) }
+  return post
+end
+
+def render_kramdown_notation(page)
   # check if document is not set to be ignored
   return page.output if !page.data || is_ignored?(page)
   # convert HTML entities back to characters
@@ -107,12 +122,23 @@ def escape_method( type, expression, doc_path )
 end
 
 Jekyll::Hooks.register :pages, :post_render do |page|
-  page.output = render(page)
+  page.output = render_kramdown_notation(page)
 end
 
 Jekyll::Hooks.register :documents, :post_render do |doc|
-  doc.output = render(doc)
+  doc.output = render_kramdown_notation(doc)
 end
+
+Jekyll::Hooks.register :pages, :pre_render do |page|
+  page.content = render_latex_notation(page)
+end
+
+Jekyll::Hooks.register :documents, :pre_render do |doc|
+  doc.content = render_latex_notation(doc)
+end
+
+#######################################################################################
+# SETTINGS AND INIT
 
 Jekyll::Hooks.register :site, :after_init do |site|
   # load jektex config from config file and if no config is defined make empty one
