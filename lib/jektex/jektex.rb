@@ -185,6 +185,8 @@ Jekyll::Hooks.register :site, :after_reset do
 end
 
 Jekyll::Hooks.register :site, :post_write do
+  # print stats once more to prevent them from being overwriten by error log
+  print_stats
   # print new line to prevent overwriting previous output
   print "\n"
   # check if caching is enabled
