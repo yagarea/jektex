@@ -11,13 +11,15 @@ Enjoy the comfort of LaTeX and Markdown without cluttering your site with bloate
 - Supports user-defined global macros
 - Has I/O-efficient caching system
 - Dynamically informs about the number of expressions during rendering
-- Is easy to setup
-- Works with Jekyll workflow and project structure
+- Is very easy to setup
+- Works with the Jekyll workflow and project structure
 - Marks invalid expressions in document, printing its location during rendering
-- Highly configurable with sensible defaults
-- Correctly invalidates cache with configuration changes
+- Is highly configurable with sensible defaults
+- Correctly invalidates cache, even with configuration changes
 
 ## Usage
+
+Jektex supports both the built-in Kramdown math notation, and the newer LaTeX-only math notation.
 
 ### Kramdown notation
 **Inline formula**  
@@ -39,15 +41,10 @@ Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliqu
 ea commodo consequat.
 ```
 
-_Why Jektex does not use conventional single `$` for inline formulas and double `$$` for display mode?  
-This is how [kramdown](https://kramdown.gettalong.org/)(Jekyll's markdown parser) works, so I decided to respect this convention.
-It makes this plugin more universal._
-
-
 ### LaTex math mode notation
 **Inline formula**  
 Put formula between two escaped brackets `\(` `\)`.
-Its position in a text does not matter.
+Its position in the text does not matter.
 ```latex
 Lorem ipsum dolor sit amet, consectetur \(e^{i\theta}=\cos(\theta)+i\sin(\theta)\)
 adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -55,7 +52,7 @@ adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliq
 
 **Display formula**  
 Put formula between two escaped square brackets `\[` `\]`.
-Its position in a text does not matter.
+Its position in the text does not matter.
 ```latex
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua.
@@ -67,7 +64,7 @@ ea commodo consequat.
 ```
 
 ### Config
-Jektex si highly configurable using your `_config.yml` file
+Jektex si highly configurable via your `_config.yml` file.
 
 **Disabling cache**  
 You can disable caching with `disable_disk_cache = true` in `_config.yml`.
@@ -84,7 +81,7 @@ jektex:
   cache_dir: ".jektex-cache"
 ```
 
-**Ignore**  
+**Ignoring files**  
 By default, Jektex tries to render LaTeX in all files rendered by Jekyll.
 This can sometimes be undesirable, for example when rendering an _RSS feed_.
 Jektex solves this by using the `ignore` option:
@@ -96,7 +93,7 @@ jektex:
 
 This example configuration ignores all `.xml` files, `README.md` and all files in the `_drafts` directory.
 
-Another option for ignoring specific posts is setting `jektex` attribute in front matter of posts to `false`:
+Another way to ignore specific posts is setting the `jektex` attribute in front matter to `false`:
 ```yaml
 ---
 title: "How Jektex works"
@@ -108,8 +105,8 @@ layout: post
 
 Setting `jektex` tag to `true` or not setting at all will result in Jektex rendering LaTeX expressions in that post.
 
-**Macros**  
-You can define global macros like this:
+**Using macros**  
+You can define global macros:
 ```yaml
 # Jektex macros
 jektex:
@@ -143,7 +140,7 @@ jektex:
 This plugin is available as a [RubyGem](https://rubygems.org/gems/jektex).
 
 **Using bundler**  
-Add `jektex` to your `Gemfile`:
+Add Jektex to your `Gemfile`:
 ```ruby
 group :jekyll_plugins do
     gem "jektex"
@@ -153,10 +150,10 @@ end
 and run `bundle install`
 
 **Without bundler**  
-Just run `gem install jektex`
+Run `gem install jektex`
 
 **After installation**  
-Add jektex to your plugin list in your `_config.yml` file:
+Add Jektex to your plugin list in your `_config.yml` file
 ```yaml
 plugins:
     - jektex
