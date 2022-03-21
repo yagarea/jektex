@@ -7,7 +7,6 @@ PATH_TO_JS = File.join(__dir__, "/katex.min.js")
 DEFAULT_CACHE_DIR = ".jekyll-cache"
 CACHE_FILE = "jektex-cache.marshal"
 KATEX = ExecJS.compile(open(PATH_TO_JS).read)
-PARSE_ERROR_PLACEHOLDER = "<b style='color: red;'>PARSE ERROR</b>"
 FRONT_MATTER_TAG = "jektex"
 INDENT = " " * 13
 
@@ -79,8 +78,10 @@ def escape_method( type, expression, doc_path )
     # create the cache directory, if it doesn't exist
     begin
       # render using ExecJS
-      result =  KATEX.call("katex.renderToString", expression,
-                          { displayMode: is_in_display_mode,  macros: $global_macros})
+      result = KATEX.call("katex.renderToString", expression,
+                          { displayMode: is_in_display_mode,
+                            macros: $global_macros
+                          })
     rescue SystemExit, Interrupt
       # save cache to disk
       File.open($path_to_cache, "w"){|to_file| Marshal.dump($cache, to_file)}
@@ -89,7 +90,12 @@ def escape_method( type, expression, doc_path )
     rescue ExecJS::ProgramError => pe
       # catch parse error
       puts "\e[31m " + pe.message.gsub("ParseError: ", "") + "\n\t"  + doc_path + "\e[0m"
-      return PARSE_ERROR_PLACEHOLDER
+      # render expression with error highlighting enabled
+      return KATEX.call("katex.renderToString", expression,
+                          { displayMode: is_in_display_mode,
+                            macros: $global_macros,
+                            throwOnError: false
+                          })
     end
     # save to cache
     $cache[expression_hash] = result
@@ -122,7 +128,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
     $cache = Hash.new
   end
 
-  # check if cache is disable in config
+  # check if cache is disabled in config
   $disable_disk_cache = site.config["disable_disk_cache"] if site.config.has_key?("disable_disk_cache")
 
   # load macros
