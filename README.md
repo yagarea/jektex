@@ -13,7 +13,7 @@ Enjoy comfort of latex and markdown without cluttering your site with bloated ja
 - Has dynamic and informative log during rendering
 - Is easy to setup
 - Does not interfere with Jekyll workflow and project structure
-- Marks invalid syntax in document
+- Marks invalid syntax in document with dynamic error highlighting
 - Prints location of invalid expression during rendering
 - Highly configurable but still having sensible defaults
 - Makes sure that cache does not contain expression rendered with outdated configuration

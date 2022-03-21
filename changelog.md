@@ -1,5 +1,9 @@
 # Change log
 
+## 0.0.8
+- Implement support for LaTeX math mode notation
+- Now syntax errors would render with dynamic error highlighting instead of static error place holder
+
 ## 0.0.7
 - Fix crashing at start in some setups
 
