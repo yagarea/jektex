@@ -48,14 +48,15 @@ so I decided to respect this convention. It makes this plugin more consistent an
 
 ### LaTex math mode notation
 **Inline formula**  
-Put formula between two escaped brackets `\(` `\)`.
+Put formula between two escaped brackets `\(` `\)`. Its position in a text does not matter.
 ```latex
 Lorem ipsum dolor sit amet, consectetur \(e^{i\theta}=\cos(\theta)+i\sin(\theta)\)
 adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 ```
 
 **Display formula**  
-Put formula between two escaped square brackets `\[` `\]`.
+Put formula between two escaped square brackets `\[` `\]`. Its position in a text does 
+not matter.
 ```latex
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua.
