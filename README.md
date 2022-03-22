@@ -16,6 +16,7 @@ Enjoy the comfort of LaTeX and Markdown without cluttering your site with bloate
 - Marks invalid expressions in document, printing its location during rendering
 - Is highly configurable with sensible defaults
 - Makes sure that cache does not contain expression rendered with outdated configuration
+- Supports two major LaTeX notations
 
 ## Usage
 
