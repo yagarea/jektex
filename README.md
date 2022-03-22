@@ -175,6 +175,6 @@ It is much better practice to download the [**css** file](https://cdn.jsdelivr.n
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
 
 ## Contributions and bug reports
-Feel free to repost any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
+Feel free to report any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
 I am opened for pull requests as well.
 
