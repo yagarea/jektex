@@ -1,5 +1,8 @@
 # Change log
 
+## 0.0.9
+- Add a mute option to suppress Jektex output.
+
 ## 0.0.8
 - Implement support for LaTeX math mode notation
 - Now syntax errors would render with dynamic error highlighting instead of static error place holder
