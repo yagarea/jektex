@@ -83,7 +83,6 @@ By default, Jektex cache will be saved in `.jekyll-cache` directory.
 This results in its deletion when you call `jekyll clean`.
 To prevent cache deletion or to change the cache location, you can specify `cache_dir` in `_config.yml`:
 ```yaml
-# Jektex cache dir location
 jektex:
   cache_dir: ".jektex-cache"
 ```
@@ -93,7 +92,6 @@ By default, Jektex tries to render LaTeX in all files rendered by Jekyll.
 This can sometimes be undesirable, for example when rendering an _RSS feed_ with excerpts containing LaTeX.
 Jektex solves this by using the `ignore` option:
 ```yaml
-# Jektex ignore files
 jektex:
   ignore: ["*.xml", "README.md", "_drafts/*" ]
 ```
@@ -116,7 +114,6 @@ Setting `jektex` tag to `true` or not setting at all will result in Jektex rende
 **Using macros**  
 You can define global macros:
 ```yaml
-# Jektex macros
 jektex:
   macros:
     - ["\\Q", "\\mathbb{Q}"]
@@ -124,6 +121,14 @@ jektex:
 ```
 And yes, you have to escape the backlash (`\`) with another backlash.
 This is due to the [yaml specification](https://yaml.org/).
+
+**Silencing Jektex output**  
+Jektex periodically informs the user about rendered/cached equations.
+If this is not desired, you can set the `silent` option (`false` by default).
+```yaml
+jektex:
+  silent: true
+```
 
 **Complete examples**  
 Recommended config:
@@ -142,6 +147,7 @@ jektex:
   cache_dir: ".jekyll-cache"
   ignore: []
   macros: []
+  silent: false
 ```
 
 ## Installation

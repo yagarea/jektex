@@ -85,7 +85,7 @@ def escape_method( type, expression, doc_path )
   if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(expression))
     # check if expressin conains updated macro
     $count_newly_generated_expressions += 1
-    print_stats
+    print_stats unless $silent
     return $cache[expression_hash]
 
   # else generate one and store it
@@ -104,7 +104,7 @@ def escape_method( type, expression, doc_path )
       raise
     rescue ExecJS::ProgramError => pe
       # catch parse error
-      puts "\e[31m #{pe.message.gsub("ParseError: ", "")}\n\t#{doc_path}\e[0m"
+      puts "\e[31m #{pe.message.gsub("ParseError: ", "")}\n\t#{doc_path}\e[0m" unless $silent
       # render expression with error highlighting enabled
       return KATEX.call("katex.renderToString", expression,
                           { displayMode: is_in_display_mode,
@@ -167,16 +167,21 @@ Jekyll::Hooks.register :site, :after_init do |site|
   # make list of updated macros
   $updated_global_macros = get_list_of_updated_global_macros($global_macros, $cache["cached_global_macros"])
   # print macro information
-  if $global_macros.empty?
-    puts "#{INDENT}LaTeX: no macros loaded"
-  else
-    puts "#{INDENT}LaTeX: #{$global_macros.size} macro" \
-      "#{$global_macros.size == 1 ? "" : "s"} loaded" +
-      ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)")
+  unless $silent
+    if $global_macros.empty?
+      puts "#{INDENT}LaTeX: no macros loaded"
+    else
+      puts "#{INDENT}LaTeX: #{$global_macros.size} macro" \
+        "#{$global_macros.size == 1 ? "" : "s"} loaded" +
+        ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)")
+    end
   end
 
   # load list of ignored files
   $ignored = config["ignore"] if config.has_key?("ignore")
+
+  $silent = false
+  $silent = config["silent"] if config.has_key?("silent")
 end
 
 Jekyll::Hooks.register :site, :after_reset do
@@ -186,9 +191,9 @@ end
 
 Jekyll::Hooks.register :site, :post_write do
   # print stats once more to prevent them from being overwriten by error log
-  print_stats
+  print_stats unless $silent
   # print new line to prevent overwriting previous output
-  print "\n"
+  print "\n" unless $silent
   # check if caching is enabled
   if !$disable_disk_cache
     # save global macros to cache
