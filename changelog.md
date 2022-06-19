@@ -2,6 +2,7 @@
 
 ## 0.0.9
 - Add a mute option to suppress Jektex output.
+- Fix bug when in obscure cases Latex notation would not be encoded as valid html entity
 
 ## 0.0.8
 - Implement support for LaTeX math mode notation
