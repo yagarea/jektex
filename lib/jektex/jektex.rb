@@ -9,6 +9,7 @@ CACHE_FILE = "jektex-cache.marshal"
 KATEX = ExecJS.compile(open(PATH_TO_JS).read)
 FRONT_MATTER_TAG = "jektex"
 INDENT = " " * 13
+HTML_ENTITY_PARSER = HTMLEntities.new
 
 $global_macros = Hash.new
 $updated_global_macros = Array.new
@@ -54,7 +55,7 @@ def render_latex_notation(page)
   # check if document is not set to be ignored
   return page.content if !page.data || is_ignored?(page)
   # convert HTML entities back to characters
-  post = HTMLEntities.new.decode(page.content.to_s)
+  post = HTML_ENTITY_PARSER.decode(page.content.to_s)
   # render inline expressions
   post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
   # render display mode expressions
@@ -66,12 +67,11 @@ def render_kramdown_notation(page)
   # check if document is not set to be ignored
   return page.output if !page.data || is_ignored?(page)
   # convert HTML entities back to characters
-  #post = HTMLEntities.new.decode(page.output.to_s)
   post = page.output.to_s
   # render inline expressions
-  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, HTMLEntities.new.decode($2), page.relative_path) }
+  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, HTML_ENTITY_PARSER.decode($2), page.relative_path) }
   # render display mode expressions
-  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, HTMLEntities.new.decode($2), page.relative_path) }
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, HTML_ENTITY_PARSER.decode($2), page.relative_path) }
   return post
 end
 
