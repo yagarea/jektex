@@ -71,7 +71,7 @@ def render_kramdown_notation(page)
   # render inline expressions
   post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, HTMLEntities.new.decode($2), page.relative_path) }
   # render display mode expressions
-  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.relative_path) }
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, HTMLEntities.new.decode($2), page.relative_path) }
   return post
 end
 
