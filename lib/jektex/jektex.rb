@@ -19,6 +19,7 @@ $count_newly_generated_expressions = 0
 $path_to_cache = File.join(DEFAULT_CACHE_DIR, CACHE_FILE)
 $cache = nil
 $disable_disk_cache = false
+$silent = false
 
 $ignored = Array.new
 
@@ -55,7 +56,7 @@ def render_latex_notation(page)
   # check if document is not set to be ignored
   return page.content if !page.data || is_ignored?(page)
   # convert HTML entities back to characters
-  post = HTML_ENTITY_PARSER.decode(page.content.to_s)
+  post = page.content.to_s
   # render inline expressions
   post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
   # render display mode expressions
@@ -69,16 +70,16 @@ def render_kramdown_notation(page)
   # convert HTML entities back to characters
   post = page.output.to_s
   # render inline expressions
-  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, HTML_ENTITY_PARSER.decode($2), page.relative_path) }
+  post = post.gsub(/(\\\()((.|\n)*?)(?<!\\)\\\)/) { |m| escape_method($1, $2, page.relative_path) }
   # render display mode expressions
-  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, HTML_ENTITY_PARSER.decode($2), page.relative_path) }
+  post = post.gsub(/(\\\[)((.|\n)*?)(?<!\\)\\\]/) { |m| escape_method($1, $2, page.relative_path) }
   return post
 end
 
-def escape_method( type, expression, doc_path )
+def escape_method(type, expression, doc_path)
   # detect if expression is in display mode
   is_in_display_mode = type.downcase =~ /\[/
-
+  expression = HTML_ENTITY_PARSER.decode(expression)
   # generate a hash from the math expression
   expression_hash = Digest::SHA2.hexdigest(expression) + is_in_display_mode.to_s
 
@@ -117,7 +118,7 @@ def escape_method( type, expression, doc_path )
     $cache[expression_hash] = result
     # update count of newly generated expressions
     $count_newly_generated_expressions += 1
-    print_stats
+    print_stats unless $silent
     return result
   end
 end
@@ -165,24 +166,24 @@ Jekyll::Hooks.register :site, :after_init do |site|
     end
   end
 
+  # check is silent mode is activated
+  $silent = config["silent"] if config.has_key?("silent")
   # make list of updated macros
   $updated_global_macros = get_list_of_updated_global_macros($global_macros, $cache["cached_global_macros"])
+
   # print macro information
   unless $silent
     if $global_macros.empty?
-      puts "#{INDENT}LaTeX: no macros loaded"
+      puts "#{INDENT}LaTeX: no macros loaded" unless $silent
     else
       puts "#{INDENT}LaTeX: #{$global_macros.size} macro" \
         "#{$global_macros.size == 1 ? "" : "s"} loaded" +
-        ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)")
+        ($updated_global_macros.empty? ? "" : " (#{$updated_global_macros.size} updated)") unless $silent
     end
   end
 
   # load list of ignored files
   $ignored = config["ignore"] if config.has_key?("ignore")
-
-  $silent = false
-  $silent = config["silent"] if config.has_key?("silent")
 end
 
 Jekyll::Hooks.register :site, :after_reset do
