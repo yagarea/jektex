@@ -49,6 +49,18 @@ def print_stats
   $stdout.flush
 end
 
+def dom_to_list(tree)
+  output = Array.new
+  for tree_element in tree
+      output.append(tree_element)
+    unless tree_element.children.empty?
+      output.concat(tree_to_list( tree_element.children))
+    end
+  end
+  return output
+end
+
+
 #######################################################################################
 # Render
 
