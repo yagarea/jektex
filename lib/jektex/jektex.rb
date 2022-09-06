@@ -182,6 +182,9 @@ Jekyll::Hooks.register :site, :after_init do |site|
     end
   end
 
+  # add jektex logo macro
+  $global_macros['\jektex'] = '\text{\raisebox{-0.55ex}{J}\kern{-0.3ex}E\kern{-0.25ex}\raisebox{-0.5ex}{K}\kern{-0.7ex}}\TeX'
+
   # load list of ignored files
   $ignored = config["ignore"] if config.has_key?("ignore")
 end
