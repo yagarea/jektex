@@ -70,6 +70,9 @@ Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliqu
 ea commodo consequat.
 ```
 
+### Logo macro
+There is a build in macro for jektex logo. You can use it as `\jektex`.
+
 ### Config
 Jektex si highly configurable via your `_config.yml` file.
 
@@ -183,4 +186,3 @@ You can find more information on [KaTeX's website](https://katex.org/docs/browse
 ## Contributions and bug reports
 Feel free to report any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
 I am opened for pull requests as well.
-
