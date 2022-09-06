@@ -138,6 +138,7 @@ Recommended config:
 jektex:
   cache_dir: ".jektex-cache"
   ignore: ["*.xml"]
+  silent: false
   macros:
     - ["\\Q", "\\mathbb{Q}"]
     - ["\\C", "\\mathbb{C}"]
@@ -148,8 +149,8 @@ Having no configuration is equivalent to this:
 jektex:
   cache_dir: ".jekyll-cache"
   ignore: []
-  macros: []
   silent: false
+  macros: []
 ```
 
 ## Installation
