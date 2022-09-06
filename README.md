@@ -1,6 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/jektex.svg)](https://rubygems.org/gems/jektex)
 
-# Jektex
+# ![Jektex](https://blackblog.cz/assets/img/projects/jektex.svg)
 A Jekyll plugin for blazing-fast server-side cached LaTeX rendering, with support for macros.
 Enjoy the comfort of LaTeX and Markdown without cluttering your site with bloated JavaScript.
 
@@ -19,7 +19,6 @@ Enjoy the comfort of LaTeX and Markdown without cluttering your site with bloate
 - Supports two major LaTeX notations
 
 ## Usage
-
 Jektex supports both the built-in Kramdown math notation, and the newer LaTeX-only math notation.
 
 ### Kramdown notation
@@ -186,3 +185,4 @@ You can find more information on [KaTeX's website](https://katex.org/docs/browse
 ## Contributions and bug reports
 Feel free to report any bugs or even make feature request in [issues on official repository](https://github.com/yagarea/jektex/issues).
 I am opened for pull requests as well.
+
