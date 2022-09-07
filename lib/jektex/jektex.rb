@@ -147,7 +147,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   config = site.config["jektex"] || Hash.new
 
   # check if there is defined custom cache location in config
-  $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if config.has_key?("cache_dir")
+$path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if config.has_key?("cache_dir")
 
   # load content of cache file if it exists
   if File.exist?($path_to_cache)
@@ -188,6 +188,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
 
   # load list of ignored files
   $ignored = config["ignore"] if config.has_key?("ignore")
+  $ignored.append("#{$path_to_cache}/*")
 end
 
 Jekyll::Hooks.register :site, :after_reset do
