@@ -1,9 +1,11 @@
 # Change log
 
 ## 0.0.9
-- Add a mute option to suppress Jektex output.
-- Fix bug when in obscure cases Latex notation would not be encoded as valid html entity
-- Add jektex logo as macro (`\jektex`)
+- Add a silent option to suppress Jektex output.
+- Add jektex logo as macro (`\jektex`).
+- Fix bug when in obscure cases Latex notation would not be encoded as valid html entities.
+- Fix bug when jekyll tries rerendering its own cache resulting in endless loop.
+- Update katex to version 0.16.2.
 
 ## 0.0.8
 - Implement support for LaTeX math mode notation
