@@ -104,7 +104,7 @@ This example configuration ignores all `.xml` files, `README.md` and all files i
 Another way to ignore specific posts is setting the `jektex` attribute in front matter to `false`:
 ```yaml
 ---
-ttle: "How Jektex works"
+title: "How Jektex works"
 category: "Development"
 jektex: false
 layout: post
