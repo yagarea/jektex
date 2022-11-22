@@ -5,7 +5,8 @@
 - Add jektex logo as macro (`\jektex`).
 - Fix bug when in obscure cases Latex notation would not be encoded as valid html entities.
 - Fix bug when jekyll tries rerendering its own cache resulting in endless loop.
-- Update katex to version 0.16.2.
+- Now you can place single latex expression as list item using `- \$$ ... $$`
+- Update katex to version 0.16.3.
 
 ## 0.0.8
 - Implement support for LaTeX math mode notation
