@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
     }
   end
 
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 2.7.0"
   spec.add_dependency "execjs", "~> 2.8", ">= 2.8.1"
   spec.add_dependency "digest", "~> 3.0", ">= 3.0.0"
   spec.add_dependency "htmlentities", "~> 4.3", ">= 4.3.4"
