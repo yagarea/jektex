@@ -7,6 +7,7 @@
 - Fix bug when jekyll tries rerendering its own cache resulting in endless loop.
 - Now you can place single latex expression as list item using `- \$$ ... $$`
 - Update katex to version 0.16.3.
+- Remake dependencies for debian packages compatibility
 - Optimization and stability improvement
 
 ## 0.0.8
