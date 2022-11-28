@@ -3,11 +3,10 @@
 ## 0.1.0
 - Add a silent option to suppress Jektex output.
 - Add jektex logo as macro (`\jektex`).
-- Fix bug when in obscure cases Latex notation would not be encoded as valid html entities.
-- Fix bug when jekyll tries rerendering its own cache resulting in endless loop.
-- Now you can place single latex expression as list item using `- \$$ ... $$`
-- Update katex to version 0.16.3.
-- Remake dependencies for debian packages compatibility
+- Fix bug when in obscure cases Latex notation would not be encoded as valid HTML entities.
+- Fix bug when Jekyll tries rerendering its own cache resulting in endless loop.
+- Update KaTeX to version 0.16.3.
+- Remake dependencies for Debian packages compatibility
 - Optimization and stability improvement
 
 ## 0.0.8
