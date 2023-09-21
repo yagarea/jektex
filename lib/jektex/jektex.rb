@@ -85,7 +85,7 @@ def escape_method(type, expression, doc_path)
 
   # use it if it exists
   if($cache.has_key?(expression_hash) && !contains_updated_global_macro?(expression))
-    # check if expressin conains updated macro
+    # check if expression contains updated macro
     $count_newly_generated_expressions += 1
     print_stats unless $silent
     return $cache[expression_hash]
@@ -166,7 +166,7 @@ $path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if config.has_k
     end
   end
 
-  # check is silent mode is activated
+  # check if silent mode is activated
   $silent = config["silent"] if config.has_key?("silent")
   # make list of updated macros
   $updated_global_macros = get_list_of_updated_global_macros($global_macros, $cache["cached_global_macros"])
@@ -197,7 +197,7 @@ Jekyll::Hooks.register :site, :after_reset do
 end
 
 Jekyll::Hooks.register :site, :post_write do
-  # print stats once more to prevent them from being overwriten by error log
+  # print stats once more to prevent them from being overwritten by error log
   print_stats unless $silent
   # print new line to prevent overwriting previous output
   print "\n" unless $silent
