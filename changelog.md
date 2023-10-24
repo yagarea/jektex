@@ -1,5 +1,10 @@
 # Change log
 
+## 0.1.1
+- Update KaTeX to 0.16.9
+- Support for bun.sh
+
+
 ## 0.1.0
 - Add a silent option to suppress Jektex output.
 - Add jektex logo as macro (`\jektex`).
