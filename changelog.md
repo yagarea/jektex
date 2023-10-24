@@ -1,7 +1,7 @@
 # Change log
 
 ## 0.1.1
-- Update KaTeX to 0.16.9
+- Update KaTeX to 0.16.9 (It is recommended to update your KaTeX css to prevent visual glitches.)
 - Added support for bun.sh
 - Update documentation
 - Fix bug when build in macros were counted as user defined macros
