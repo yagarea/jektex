@@ -23,14 +23,14 @@ Jektex supports both the built-in Kramdown math notation, and the newer LaTeX-on
 
 ### Kramdown notation
 **Inline formula**  
-Put formula between two pairs of dolar signs (`$$`) inside of paragraph.
+Put formula between two pairs of dollar signs (`$$`) inside of paragraph.
 ```latex
 Lorem ipsum dolor sit amet, consectetur $$e^{i\theta}=\cos(\theta)+i\sin(\theta)$$
 adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 ```
 
 **Display formula**  
-Put formula between two pairs of dolar sings (`$$`) and surround it with two empty lines.
+Put formula between two pairs of dollar signs (`$$`) and surround it with two empty lines.
 ```latex
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua.
