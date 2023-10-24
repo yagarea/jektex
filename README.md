@@ -178,9 +178,9 @@ plugins:
 
 and don't forget to add `katex.min.css` to you HTML head:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
 ```
-It is much better practice to download the [**css** file](https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css) and load it as an asset from your server directly.
+It is much better practice to download the [**css** file](https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css) and load it as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
 
 ## Contributions and bug reports
