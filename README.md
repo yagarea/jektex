@@ -124,6 +124,15 @@ jektex:
 And yes, you have to escape the backlash (`\`) with another backlash.
 This is due to the [yaml specification](https://yaml.org/).
 
+You can define macros with parameters:
+```yaml
+jektex:
+  macros:
+    - ["\\vec", "\\mathbf{#1}"]
+    - ["\\addBar", "\\bar{#1}"]
+```
+This simulates behaviour of LaTeX `\newcommand`.
+
 **Silencing Jektex output**  
 Jektex periodically informs the user about rendered/cached equations.
 If this is not desired, you can set the `silent` option (`false` by default).
