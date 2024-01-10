@@ -44,7 +44,8 @@ ea commodo consequat.
 _Why Jektex does not use conventional single `$` for inline formulas and double `$$` for
 display mode?  
 This is how [kramdown](https://kramdown.gettalong.org/) (Jekyll's markdown parser) works 
-so I decided to respect this convention. It makes this plugin more consistent and universal._
+so I decided to respect this convention. It makes this plugin more consistent and universal.
+See [this issue](https://github.com/gettalong/kramdown/issues/762) for more context._
 
 
 ### LaTex math mode notation
