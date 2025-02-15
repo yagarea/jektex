@@ -75,7 +75,7 @@ ea commodo consequat.
 There is a build in macro for jektex logo. You can use it as `\jektex`.
 
 ### Config
-Jektex si highly configurable via your `_config.yml` file.
+Jektex is highly configurable via your `_config.yml` file.
 
 **Disabling cache**  
 You can disable caching with `disable_disk_cache = true` in `_config.yml`.
