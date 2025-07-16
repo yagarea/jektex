@@ -143,6 +143,21 @@ jektex:
   silent: true
 ```
 
+**Trust**  
+This option toggles features KaTeX deems potentially unsafe (`false` by default).
+The features in question are:
+
+- `{command: "\\url", url, protocol}` where `protocol` is a lowercased string like `"http"` or `"https"` that appears before a colon, or `"_relative"` for relative URLs.
+- `{command: "\\href", url, protocol}`
+- `{command: "\\includegraphics", url, protocol}`
+- `{command: "\\htmlClass", class}`
+- `{command: "\\htmlId", id}`
+- `{command: "\\htmlStyle", style}`
+- `{command: "\\htmlData", attributes}`
+
+For more information go to [katex.org/docs/options](https://katex.org/docs/options).
+
+
 **Complete examples**  
 Recommended config:
 ```yaml
@@ -150,6 +165,7 @@ jektex:
   cache_dir: ".jektex-cache"
   ignore: ["*.xml"]
   silent: false
+  trust: false
   macros:
     - ["\\Q", "\\mathbb{Q}"]
     - ["\\C", "\\mathbb{C}"]
@@ -161,6 +177,7 @@ jektex:
   cache_dir: ".jekyll-cache"
   ignore: []
   silent: false
+  trust: false
   macros: []
 ```
 
