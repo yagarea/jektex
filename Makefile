@@ -1,6 +1,5 @@
 
-
-PHONY: local
+#PHONY: local
 
 local:
 	rm -rf ./jektex-*.gem
@@ -8,3 +7,6 @@ local:
 	gem uninstall jektex
 	gem install ./jektex-*.gem
 
+run-tests:
+	@echo "Test testing"
+	ruby -Itest test/test_configuration.rb
