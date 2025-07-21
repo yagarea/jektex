@@ -145,6 +145,11 @@ jektex:
 
 **Trust**  
 This option toggles features KaTeX deems potentially unsafe (`false` by default).
+```yaml
+jektex:
+  trust: false
+```
+
 The features in question are:
 
 - `{command: "\\url", url, protocol}` where `protocol` is a lowercased string like `"http"` or `"https"` that appears before a colon, or `"_relative"` for relative URLs.
@@ -206,9 +211,9 @@ plugins:
 
 and don't forget to add `katex.min.css` to you HTML head:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-MlJdn/WNKDGXveldHDdyRP1R4CTHr3FeuDNfhsLPYrq2t0UBkUdK2jyTnXPEK1NQ" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.css" integrity="sha384-o3WH+1yEhq+grOgz1BVYTZPyTlMXrDxnjN1By9/ba94JqJhva6wFm2Hb+URQX53v" crossorigin="anonymous">
 ```
-It is much better practice to download the [**css** file](https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css) and load it as an asset from your server directly.
+It is much better practice to download the [**css** file](https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.css) and load it as an asset from your server directly.
 You can find more information on [KaTeX's website](https://katex.org/docs/browser.html).
 
 ## Contributions and bug reports
