@@ -22,7 +22,7 @@ class TestConfiguration < Test::Unit::TestCase
 
 
   def test_default_values
-    config = JektexConfig.new(Hash.new)
+    config = Jektex::Config.new(Hash.new)
 
     assert_equal(File.join(".jekyll-cache", "jektex-cache.marshal"),
                  config.path_to_cache_file)
@@ -41,7 +41,7 @@ class TestConfiguration < Test::Unit::TestCase
 
 
   def test_load_jekyl_config
-    config = JektexConfig.new(@test_jekyll_config)
+    config = Jektex::Config.new(@test_jekyll_config)
 
     # Should be changed by the test config
     assert_equal(File.join("TEST_CACHE_DIR", "jektex-cache.marshal"),
