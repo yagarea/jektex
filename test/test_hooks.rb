@@ -43,7 +43,7 @@ class TestHooks < Test::Unit::TestCase
     Jektex.config = nil
     Jektex.cache = nil
     Jektex.renderer = nil
-    Jektex.processor = nil
+    Jektex.page_processor = nil
     Jektex.reporter = nil
   end
 
@@ -104,7 +104,7 @@ class TestHooks < Test::Unit::TestCase
     trigger(:documents, :post_render, document)
     assert_true(document.output.include?("katex-display"))
 
-    assert_equal(2, Jektex.processor.rendered_count)
+    assert_equal(2, Jektex.page_processor.rendered_count)
 
     trigger(:site, :post_write, site)
     assert_true(File.exist?(Jektex.config.path_to_cache_file))
@@ -112,11 +112,11 @@ class TestHooks < Test::Unit::TestCase
 
     # watch-mode rebuild: counters reset, same expression now comes from cache
     trigger(:site, :after_reset, site)
-    assert_equal(0, Jektex.processor.rendered_count)
+    assert_equal(0, Jektex.page_processor.rendered_count)
     rebuilt_page = FakePage.new({}, 'intro \(\RR\) outro', nil, "post.md")
     trigger(:pages, :pre_render, rebuilt_page)
-    assert_equal(1, Jektex.processor.cache_hit_count)
-    assert_equal(0, Jektex.processor.rendered_count)
+    assert_equal(1, Jektex.page_processor.cache_hit_count)
+    assert_equal(0, Jektex.page_processor.rendered_count)
   end
 
 
@@ -135,8 +135,8 @@ class TestHooks < Test::Unit::TestCase
     assert_false(output.string.include?("updated"))
 
     trigger(:pages, :pre_render, FakePage.new({}, '\(\RR\)', nil, "post.md"))
-    assert_equal(0, Jektex.processor.rendered_count)
-    assert_equal(1, Jektex.processor.cache_hit_count)
+    assert_equal(0, Jektex.page_processor.rendered_count)
+    assert_equal(1, Jektex.page_processor.cache_hit_count)
   end
 
 
