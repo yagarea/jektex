@@ -4,6 +4,8 @@
 - Major internal rewrite into small tested classes (Config, Renderer, Cache, Processor, Reporter) with a full unit test suite.
 - New `trust` option in config that enables adverse behavior viz. [docs](https://katex.org/docs/options).
 - Fix `jektex: false` in front matter being ignored. Boolean values now disable rendering, quoted `"false"` keeps working.
+- Expressions inside code blocks, inline code, `{% highlight %}` tags and similar are no longer rendered. LaTeX in code samples now stays as written, matching the behavior of KaTeX's client side auto-render ([#5](https://github.com/yagarea/jektex/issues/5)).
+- Formulas no longer break when indented or placed in markdown structures like lists, so the `{::nomarkdown}` workaround is not needed anymore.
 - Fix number of loaded macros being reported one too high.
 - Fix `silent` option not silencing all output.
 - Render statistics are now accurate: expressions loaded from cache are counted separately from newly rendered ones.

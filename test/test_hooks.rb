@@ -98,7 +98,12 @@ class TestHooks < Test::Unit::TestCase
 
     page = FakePage.new({}, 'intro \(\RR\) outro', nil, "post.md")
     trigger(:pages, :pre_render, page)
-    assert_true(page.content.include?("katex"))
+    # pre_render only protects math behind tokens; rendering happens post_render
+    assert_match(Jektex::PageProcessor::TOKEN, page.content)
+    assert_false(page.content.include?("katex"))
+    page.output = page.content
+    trigger(:pages, :post_render, page)
+    assert_true(page.output.include?("katex"))
 
     document = FakePage.new({}, nil, 'converted \[x^2\]', "doc.md")
     trigger(:documents, :post_render, document)
@@ -115,6 +120,8 @@ class TestHooks < Test::Unit::TestCase
     assert_equal(0, Jektex.page_processor.rendered_count)
     rebuilt_page = FakePage.new({}, 'intro \(\RR\) outro', nil, "post.md")
     trigger(:pages, :pre_render, rebuilt_page)
+    rebuilt_page.output = rebuilt_page.content
+    trigger(:pages, :post_render, rebuilt_page)
     assert_equal(1, Jektex.page_processor.cache_hit_count)
     assert_equal(0, Jektex.page_processor.rendered_count)
   end
@@ -123,7 +130,7 @@ class TestHooks < Test::Unit::TestCase
   def test_next_process_reuses_cache_and_macro_table
     site = FakeSite.new(site_config)
     trigger_with_captured_output(:site, :after_init, site)
-    trigger(:pages, :pre_render, FakePage.new({}, '\(\RR\)', nil, "post.md"))
+    render_page_through_hooks('\(\RR\)')
     trigger(:site, :post_write, site)
 
     # simulate a completely new jekyll run against the same cache directory
@@ -134,9 +141,17 @@ class TestHooks < Test::Unit::TestCase
     assert_true(output.string.include?("2 macros loaded"))
     assert_false(output.string.include?("updated"))
 
-    trigger(:pages, :pre_render, FakePage.new({}, '\(\RR\)', nil, "post.md"))
+    render_page_through_hooks('\(\RR\)')
     assert_equal(0, Jektex.page_processor.rendered_count)
     assert_equal(1, Jektex.page_processor.cache_hit_count)
+  end
+
+  def render_page_through_hooks(content)
+    page = FakePage.new({}, content, nil, "post.md")
+    trigger(:pages, :pre_render, page)
+    page.output = page.content
+    trigger(:pages, :post_render, page)
+    page
   end
 
 
