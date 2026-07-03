@@ -22,15 +22,17 @@ Jekyll::Hooks.register :site, :after_init do |site|
                                 Jektex.cache.updated_global_macros.size)
 end
 
-# LaTeX notation (\( \) and \[ \]) in raw content, before Liquid/kramdown.
+# LaTeX notation (\( \) and \[ \]) in raw content, before Liquid/kramdown:
+# expressions are protected behind inert tokens so markdown cannot touch them.
 Jekyll::Hooks.register [:pages, :documents], :pre_render do |page|
-  page.content = Jektex.page_processor.process(page, :content)
+  page.content = Jektex.page_processor.process_content(page)
 end
 
-# The same delimiters again in the converted output — kramdown turns its
-# $$..$$ math notation into \(..\)/\[..\] during markdown conversion.
+# After conversion the HTML structure is known: tokens inside code markup
+# are restored to their source text, everything else is rendered — including
+# the \(..\)/\[..\] delimiters kramdown produces from its $$..$$ notation.
 Jekyll::Hooks.register [:pages, :documents], :post_render do |page|
-  page.output = Jektex.page_processor.process(page, :output)
+  page.output = Jektex.page_processor.process_output(page)
 end
 
 # Fires once per rebuild in watch mode — and also once during
