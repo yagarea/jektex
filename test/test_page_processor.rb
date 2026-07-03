@@ -10,21 +10,23 @@ class TestPageProcessor < Test::Unit::TestCase
   TOKEN = Jektex::PageProcessor::TOKEN
 
   class InterruptingRenderer
-    def render(_expression, display_mode:)
+    def render_batch(_expressions)
       raise Interrupt
     end
   end
 
   class RecordingRenderer
-    attr_reader :expressions
+    attr_reader :expressions, :batch_calls
 
     def initialize
       @expressions = Array.new
+      @batch_calls = 0
     end
 
-    def render(expression, display_mode:)
-      @expressions.append(expression)
-      return "[rendered]"
+    def render_batch(expressions)
+      @batch_calls += 1
+      @expressions.concat(expressions.map { |expression, _mode| expression })
+      return expressions.map { Jektex::Renderer::RenderedExpression.new("[rendered]", nil) }
     end
   end
 
@@ -198,6 +200,22 @@ class TestPageProcessor < Test::Unit::TestCase
 
     assert_equal(['a\\\\) b'], renderer.expressions)
     assert_equal("[rendered] after", result)
+  end
+
+
+  def test_page_needs_a_single_batched_render_call
+    config = build_config("cache_dir" => File.join(@dir, "cache"))
+    renderer = RecordingRenderer.new
+    processor = Jektex::PageProcessor.new(config: config,
+                                          cache: Jektex::Cache.new(config).load,
+                                          renderer: renderer,
+                                          reporter: Jektex::Reporter.new(config, out: StringIO.new))
+    page = make_page('\(a\) text \[b\] text \(c\) and \(a\) again')
+
+    processor.process_output(page)
+
+    assert_equal(1, renderer.batch_calls)
+    assert_equal(["a", "b", "c"], renderer.expressions.sort)
   end
 
 
