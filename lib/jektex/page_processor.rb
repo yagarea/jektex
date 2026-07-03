@@ -26,13 +26,21 @@ module Jektex
     INLINE_MATH = /(\\\()(.*?)(?<!\\)\\\)/m
     DISPLAY_MATH = /(\\\[)(.*?)(?<!\\)\\\]/m
 
+    TOKEN = /jektexprotected[0-9a-f]{32}/
+
+    # everything resolve_math reacts to, found in one pass
+    MATH_PATTERN = /(?<inline>\\\((?<inline_body>.*?)(?<!\\)\\\))|(?<display>\\\[(?<display_body>.*?)(?<!\\)\\\])|(?<token>#{TOKEN.source})/m
+
     # markup whose contents must never be rendered
     # (the same set KaTeX's own auto-render extension ignores)
     PROTECTED_ELEMENTS = %r{<(pre|code|script|style|textarea)\b[^>]*>.*?</\1\s*>}mi
 
-    TOKEN = /jektexprotected[0-9a-f]{32}/
-
     ProtectedExpression = Struct.new(:source, :body, :display_mode)
+
+    # a single substitution: replace text[position, length] with either the
+    # rendering of expression body (kind :expression, source is the fallback
+    # when rendering is impossible) or a literal string (kind :text)
+    Instruction = Struct.new(:position, :length, :kind, :body, :display_mode, :source)
 
     attr_reader :rendered_count, :cache_hit_count
 
@@ -55,7 +63,9 @@ module Jektex
     # pre_render: protect LaTeX-notation math in the raw content
     def process_content(page)
       return page.content if !page.data || ignored?(page)
-      return protect_math(page.content.to_s)
+      text = page.content.to_s
+      return text unless text.include?('\(') || text.include?('\[')
+      return protect_math(text)
     end
 
     # post_render: render the protected tokens and the kramdown-notation
@@ -71,18 +81,18 @@ module Jektex
     end
 
     def resolve_math(text, doc_path)
-      segments = split_on_protected_elements(text)
-      plain_texts = segments.filter_map { |kind, segment| segment if kind == :plain }
-      render_needed_expressions(plain_texts, doc_path)
-      return segments.map do |kind, segment|
-        kind == :plain ? substitute_math(segment, doc_path) : restore_protected_sources(segment)
-      end.join
+      return text unless contains_math?(text)
+      instructions = collect_instructions(text)
+      render_missing_expressions(instructions, doc_path)
+      return apply_instructions(text, instructions, doc_path)
     end
 
-    # immediate rendering of both notations in a plain string
+    # immediate rendering in a plain string, without code protection
     def render_math(text, doc_path)
-      render_needed_expressions([text], doc_path)
-      return substitute_math(text, doc_path)
+      instructions = Array.new
+      scan_segment(text, 0, :plain, instructions)
+      render_missing_expressions(instructions, doc_path)
+      return apply_instructions(text, instructions, doc_path)
     end
 
     def ignored?(page)
@@ -100,30 +110,65 @@ module Jektex
 
     private
 
+    def contains_math?(text)
+      return text.include?('\(') || text.include?('\[') || text.include?("jektexprotected")
+    end
+
     def protect_expression(source, body, display_mode)
       token = "jektexprotected" + Digest::SHA2.hexdigest(source)[0, 32]
       @protected_math[token] = ProtectedExpression.new(source, body, display_mode)
       return token
     end
 
-    def split_on_protected_elements(text)
-      segments = Array.new
+    ##### scanning
+
+    def collect_instructions(text)
+      instructions = Array.new
       position = 0
       text.scan(PROTECTED_ELEMENTS) do
         match = Regexp.last_match
-        segments.append([:plain, text[position...match.begin(0)]])
-        segments.append([:protected, match[0]])
+        scan_segment(text[position...match.begin(0)], position, :plain, instructions)
+        scan_segment(match[0], match.begin(0), :protected, instructions)
         position = match.end(0)
       end
-      segments.append([:plain, text[position..].to_s])
-      return segments
+      scan_segment(text[position..].to_s, position, :plain, instructions)
+      return instructions
     end
 
-    # renders everything the texts need but the cache cannot answer,
+    def scan_segment(segment, offset, kind, instructions)
+      segment.scan(MATH_PATTERN) do
+        match = Regexp.last_match
+        position = offset + match.begin(0)
+        if match[:token]
+          expression = @protected_math[match[0]]
+          next unless expression
+          if kind == :protected
+            # a code sample must show the LaTeX source, not the rendering
+            instructions.append(Instruction.new(position, match[0].length, :text,
+                                                nil, nil, expression.source))
+          else
+            instructions.append(Instruction.new(position, match[0].length, :expression,
+                                                expression.body, expression.display_mode,
+                                                expression.source))
+          end
+        elsif kind == :plain
+          body = match[:inline_body] || match[:display_body]
+          instructions.append(Instruction.new(position, match[0].length, :expression,
+                                              body, !match[:display].nil?, match[0]))
+        end
+      end
+    end
+
+    ##### rendering
+
+    # renders everything the instructions need but the cache cannot answer,
     # in a single call to the JavaScript runtime
-    def render_needed_expressions(texts, doc_path)
+    def render_missing_expressions(instructions, doc_path)
       @error_fallbacks = Hash.new
-      needed = texts.flat_map { |text| collect_expressions(text) }.uniq
+      needed = instructions.filter_map do |instruction|
+        next unless instruction.kind == :expression
+        [@entity_parser.decode(instruction.body), instruction.display_mode]
+      end.uniq
       missing = needed.reject { |expression, mode| @cache.fetch(expression, mode) }
       return if missing.empty?
 
@@ -146,44 +191,22 @@ module Jektex
       end
     end
 
-    def collect_expressions(text)
-      needed = Array.new
-      text.scan(INLINE_MATH) { |groups| needed.append([@entity_parser.decode(groups[1]), false]) }
-      text.scan(DISPLAY_MATH) { |groups| needed.append([@entity_parser.decode(groups[1]), true]) }
-      text.scan(TOKEN) do |token|
-        expression = @protected_math[token]
-        next unless expression
-        needed.append([@entity_parser.decode(expression.body), expression.display_mode])
+    def apply_instructions(text, instructions, doc_path)
+      result = +""
+      position = 0
+      instructions.each do |instruction|
+        result << text[position...instruction.position]
+        result << if instruction.kind == :text
+                    instruction.source
+                  else
+                    render_expression(instruction.body,
+                                      display_mode: instruction.display_mode,
+                                      doc_path: doc_path) || instruction.source
+                  end
+        position = instruction.position + instruction.length
       end
-      return needed
-    end
-
-    def substitute_math(text, doc_path)
-      text = text.gsub(INLINE_MATH) do
-        source = $~[0]
-        render_expression($2, display_mode: false, doc_path: doc_path) || source
-      end
-      text = text.gsub(DISPLAY_MATH) do
-        source = $~[0]
-        render_expression($2, display_mode: true, doc_path: doc_path) || source
-      end
-      return text.gsub(TOKEN) do |token|
-        expression = @protected_math[token]
-        if expression
-          render_expression(expression.body,
-                            display_mode: expression.display_mode,
-                            doc_path: doc_path) || expression.source
-        else
-          token
-        end
-      end
-    end
-
-    def restore_protected_sources(segment)
-      return segment.gsub(TOKEN) do |token|
-        expression = @protected_math[token]
-        expression ? expression.source : token
-      end
+      result << text[position..].to_s
+      return result
     end
 
     # Returns nil only for expressions that failed so hard that not even
@@ -206,8 +229,7 @@ module Jektex
         return cached_html
       end
 
-      # not covered by the batch — e.g. revealed by an earlier substitution
-      # or invalidated by an updated macro — so render it individually
+      # not covered by the batch — render it individually
       begin
         html = @renderer.render(expression, display_mode: display_mode)
       rescue SystemExit, Interrupt

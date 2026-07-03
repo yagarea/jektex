@@ -203,6 +203,49 @@ class TestPageProcessor < Test::Unit::TestCase
   end
 
 
+  def test_mathless_page_skips_scanning_and_rendering
+    config = build_config("cache_dir" => File.join(@dir, "cache"))
+    renderer = RecordingRenderer.new
+    processor = Jektex::PageProcessor.new(config: config,
+                                          cache: Jektex::Cache.new(config).load,
+                                          renderer: renderer,
+                                          reporter: Jektex::Reporter.new(config, out: StringIO.new))
+    page = make_page("just text, no math at all")
+
+    assert_equal("just text, no math at all", processor.process_output(page))
+    assert_same(page.content, processor.process_content(page))
+    assert_equal(0, renderer.batch_calls)
+  end
+
+
+  def test_identical_page_across_builds_is_answered_from_cache
+    body = 'x \(a\) y \[b\] z'
+    first_build = make_processor
+    first_result = first_build.process_output(make_page(body))
+    assert_equal(2, first_build.rendered_count)
+    @cache.save
+
+    second_build = make_processor
+    result = second_build.process_output(make_page(body))
+
+    assert_equal(first_result, result)
+    assert_equal(2, second_build.cache_hit_count)
+    assert_equal(0, second_build.rendered_count)
+  end
+
+
+  def test_page_with_render_error_is_rescanned_every_build
+    out = StringIO.new
+    processor = make_processor(out: out)
+
+    first_result = processor.process_output(make_page('\(\frac\)'))
+    second_result = processor.process_output(make_page('\(\frac\)'))
+
+    assert_equal(first_result, second_result)
+    assert_equal(2, out.string.scan("\e[31m").size)
+  end
+
+
   def test_page_needs_a_single_batched_render_call
     config = build_config("cache_dir" => File.join(@dir, "cache"))
     renderer = RecordingRenderer.new
