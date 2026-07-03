@@ -15,6 +15,7 @@ This project is [endorsed by KaTeX.org](https://katex.org/docs/libs#jekyll).
 - Is very easy to setup
 - Doesn't interfere with Jekyll workflow and project structure
 - Marks invalid expressions in document, printing its location during rendering
+- Leaves LaTeX inside code blocks and inline code untouched, so you can write about LaTeX
 - Is highly configurable with sensible defaults
 - Makes sure that cache does not contain expression rendered with outdated configuration
 - Supports two major LaTeX notations
