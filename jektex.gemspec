@@ -13,7 +13,6 @@ Gem::Specification.new do |spec|
   spec.author        = ["Jan Černý"]
   spec.email         = "jc@ucw.cz"
   spec.files         = [*Dir["lib/**/*.rb"], *Dir["lib/**/*.js"], "README.md", "LICENSE"]
-  spec.test_files    = [*Dir["spec/*.rb"]]
   spec.homepage      = "https://github.com/yagarea/jektex"
   spec.metadata      = { "source_code_uri" => "https://github.com/yagarea/jektex" }
   spec.require_paths = ["lib"]
@@ -28,10 +27,12 @@ Gem::Specification.new do |spec|
     }
   end
 
-  spec.required_ruby_version = ">= 2.9.0"
-  spec.add_dependency "execjs", "~> 2.9.1", ">= 2.9.1"
-  spec.add_dependency "digest", "~> 3.2.0", ">= 3.1.1"
-  spec.add_dependency "htmlentities", "~> 4.3.4", ">= 4.3.4"
+  spec.required_ruby_version = ">= 3.1.0"
+  spec.add_dependency "execjs", "~> 2.9", ">= 2.9.1"
+  spec.add_dependency "digest", ">= 3.1.1"
+  spec.add_dependency "htmlentities", "~> 4.3", ">= 4.3.4"
   spec.add_development_dependency "bundler", "~> 2.6", ">= 2.0.0"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "test-unit", "~> 3.6"
 
 end
