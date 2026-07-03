@@ -3,7 +3,7 @@
 
 module Jektex
   class << self
-    attr_accessor :config, :cache, :renderer, :processor, :reporter
+    attr_accessor :config, :cache, :renderer, :page_processor, :reporter
   end
 end
 
@@ -14,7 +14,7 @@ Jekyll::Hooks.register :site, :after_init do |site|
   Jektex.reporter  = Jektex::Reporter.new(Jektex.config)
   Jektex.cache     = Jektex::Cache.new(Jektex.config, reporter: Jektex.reporter).load
   Jektex.renderer  = Jektex::Renderer.new(Jektex.config)
-  Jektex.processor = Jektex::Processor.new(config: Jektex.config,
+  Jektex.page_processor = Jektex::PageProcessor.new(config: Jektex.config,
                                            cache: Jektex.cache,
                                            renderer: Jektex.renderer,
                                            reporter: Jektex.reporter)
@@ -24,24 +24,24 @@ end
 
 # LaTeX notation (\( \) and \[ \]) in raw content, before Liquid/kramdown.
 Jekyll::Hooks.register [:pages, :documents], :pre_render do |page|
-  page.content = Jektex.processor.process(page, :content)
+  page.content = Jektex.page_processor.process(page, :content)
 end
 
 # The same delimiters again in the converted output — kramdown turns its
 # $$..$$ math notation into \(..\)/\[..\] during markdown conversion.
 Jekyll::Hooks.register [:pages, :documents], :post_render do |page|
-  page.output = Jektex.processor.process(page, :output)
+  page.output = Jektex.page_processor.process(page, :output)
 end
 
 # Fires once per rebuild in watch mode — and also once during
 # Site#initialize BEFORE after_init has run, hence the safe navigation.
 Jekyll::Hooks.register :site, :after_reset do |_site|
-  Jektex.processor&.reset_counters
+  Jektex.page_processor&.reset_counters
 end
 
 Jekyll::Hooks.register :site, :post_write do |_site|
   # print stats once more so the error log cannot overwrite them
-  Jektex.reporter.finish(Jektex.processor.rendered_count,
-                         Jektex.processor.cache_hit_count)
+  Jektex.reporter.finish(Jektex.page_processor.rendered_count,
+                         Jektex.page_processor.cache_hit_count)
   Jektex.cache.save
 end
