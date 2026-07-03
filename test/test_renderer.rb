@@ -68,6 +68,38 @@ class TestRenderer < Test::Unit::TestCase
   end
 
 
+  def test_render_batch_renders_all_expressions_in_order
+    results = @renderer.render_batch([["x^2", false], ["y^2", true], ["z^2", false]])
+
+    assert_equal(3, results.size)
+    assert_true(results.all? { |result| result.error.nil? })
+    assert_true(results.all? { |result| result.html.include?("katex") })
+    assert_false(results[0].html.include?("katex-display"))
+    assert_true(results[1].html.include?("katex-display"))
+  end
+
+
+  def test_render_batch_isolates_errors_and_renders_fallback
+    results = @renderer.render_batch([["x^2", false], ['\frac', false], ["y^2", false]])
+
+    assert_nil(results[0].error)
+    assert_not_nil(results[1].error)
+    assert_true(results[1].error.include?("KaTeX parse error"))
+    assert_true(results[1].html.include?("katex-error"))
+    assert_nil(results[2].error)
+    assert_true(results[2].html.include?("katex"))
+  end
+
+
+  def test_render_batch_with_no_expressions_makes_no_call
+    renderer = Jektex::Renderer.new(
+      FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, false)
+    )
+
+    assert_equal([], renderer.render_batch([]))
+  end
+
+
   def test_katex_is_not_compiled_before_first_render
     renderer = Jektex::Renderer.new(
       FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, false)

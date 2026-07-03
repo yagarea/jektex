@@ -12,6 +12,7 @@
 - A corrupt cache file no longer crashes the build. The cache is rebuilt instead and cache writes are now atomic.
 - Cache resets itself automatically when the KaTeX version or a render-affecting option (like `trust`) changes, so it can never serve outdated output. Because of this new cache format, the first build after upgrading re-renders everything once.
 - Faster startup: the KaTeX bundle is compiled on first use instead of at load time.
+- Much faster first builds: all new expressions of a page are rendered in a single KaTeX call instead of one call per expression (measured around 5-10x faster with node/bun).
 
 ## 0.1.1
 - Update KaTeX to 0.16.9 (It is recommended to update your KaTeX css to prevent visual glitches.)
