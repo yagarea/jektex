@@ -134,7 +134,7 @@ end
 Jekyll::Hooks.register :site, :after_init do |site|
   # load jektex config from config file and if no config is defined make empty one
   jekyll_config = site.config || Hash.new
-  $config = JektexConfig.new(jekyll_config)
+  $config = Jektex::Config.new(jekyll_config)
 
   # load content of cache file if it exists
   if File.exist?($config.path_to_cache_file)
