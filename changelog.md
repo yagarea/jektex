@@ -1,5 +1,16 @@
 # Change log
 
+## 0.2.0
+- Major internal rewrite into small tested classes (Config, Renderer, Cache, Processor, Reporter) with a full unit test suite.
+- New `trust` option in config that enables adverse behavior viz. [docs](https://katex.org/docs/options).
+- Fix `jektex: false` in front matter being ignored. Boolean values now disable rendering, quoted `"false"` keeps working.
+- Fix number of loaded macros being reported one too high.
+- Fix `silent` option not silencing all output.
+- Render statistics are now accurate: expressions loaded from cache are counted separately from newly rendered ones.
+- A corrupt cache file no longer crashes the build. The cache is rebuilt instead and cache writes are now atomic.
+- Cache resets itself automatically when the KaTeX version or a render-affecting option (like `trust`) changes, so it can never serve outdated output. Because of this new cache format, the first build after upgrading re-renders everything once.
+- Faster startup: the KaTeX bundle is compiled on first use instead of at load time.
+
 ## 0.1.1
 - Update KaTeX to 0.16.9 (It is recommended to update your KaTeX css to prevent visual glitches.)
 - Added support for bun.sh
