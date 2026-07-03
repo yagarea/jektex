@@ -6,6 +6,7 @@ module Jektex
       @out = out
       @silent = config.silent
       @indent = config.console_indent
+      @last_progress_time = nil
     end
 
     def info(message)
@@ -29,19 +30,32 @@ module Jektex
       @out.puts "\e[31m #{message.gsub("ParseError: ", "")}\n\t#{doc_path}\e[0m"
     end
 
-    # single line overwritten in place with a carriage return;
-    # padded to a fixed width so a shorter update fully covers the previous one
+    # more frequent updates than this are invisible anyway, and printing
+    # one per expression measurably slows down large cached builds
+    PROGRESS_UPDATE_INTERVAL = 0.1
+
     def progress(rendered, from_cache)
       return if @silent
-      line = "#{@indent}LaTeX: #{rendered} expressions rendered (#{from_cache} loaded from cache)"
-      @out.print line.ljust(72) + "\r"
-      @out.flush
+      now = Time.now
+      return if @last_progress_time && now - @last_progress_time < PROGRESS_UPDATE_INTERVAL
+      @last_progress_time = now
+      print_progress_line(rendered, from_cache)
     end
 
     def finish(rendered, from_cache)
       return if @silent
-      progress(rendered, from_cache)
+      print_progress_line(rendered, from_cache)
       @out.print "\n"
+    end
+
+    private
+
+    # single line overwritten in place with a carriage return;
+    # padded to a fixed width so a shorter update fully covers the previous one
+    def print_progress_line(rendered, from_cache)
+      line = "#{@indent}LaTeX: #{rendered} expressions rendered (#{from_cache} loaded from cache)"
+      @out.print line.ljust(72) + "\r"
+      @out.flush
     end
   end
 end
