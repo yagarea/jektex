@@ -63,6 +63,16 @@ class TestReporter < Test::Unit::TestCase
   end
 
 
+  def test_progress_is_throttled
+    @reporter.progress(1, 0)
+    output_after_first = @out.string.dup
+
+    @reporter.progress(2, 0)
+
+    assert_equal(output_after_first, @out.string)
+  end
+
+
   def test_finish_ends_line_with_newline
     @reporter.finish(3, 5)
 
