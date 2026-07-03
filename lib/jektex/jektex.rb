@@ -23,7 +23,7 @@ def get_list_of_updated_global_macros(current_macros, cached_global_macros)
 end
 
 def is_ignored?(page)
-  return true if page.data[FRONT_MATTER_TAG] == "false"
+  return true if page.data[$config.front_matter_tag] == "false"
   return $config.ignore.any? { |pattern| File.fnmatch?(pattern, page.relative_path, File::FNM_DOTMATCH) }
 end
 
@@ -99,7 +99,7 @@ def escape_method(type, expression, doc_path)
       # render expression with error highlighting enabled
       return KATEX.call("katex.renderToString", expression,
                         { displayMode: is_in_display_mode,
-                          macros: $global_macros,
+                          macros: $config.global_macros,
                           throwOnError: false
                         })
     end
@@ -107,7 +107,7 @@ def escape_method(type, expression, doc_path)
     $cache[expression_hash] = result
     # update count of newly generated expressions
     $count_newly_generated_expressions += 1
-    print_stats unless $silent
+    print_stats unless $config.silent
     return result
   end
 end
@@ -133,7 +133,6 @@ end
 
 Jekyll::Hooks.register :site, :after_init do |site|
   # load jektex config from config file and if no config is defined make empty one
-$path_to_cache = File.join(config["cache_dir"].to_s, CACHE_FILE) if config.has_key?("cache_dir")
   jekyll_config = site.config || Hash.new
   $config = JektexConfig.new(jekyll_config)
 
@@ -168,13 +167,13 @@ end
 
 Jekyll::Hooks.register :site, :post_write do
   # print stats once more to prevent them from being overwritten by error log
-  print_stats unless $silent
+  print_stats unless $config.silent
   # print new line to prevent overwriting previous output
-  print "\n" unless $silent
+  print "\n" unless $config.silent
   # check if caching is enabled
   if !$config.disable_disk_cache
     # save global macros to cache
-    $cache["cached_global_macros"] = $global_macros
+    $cache["cached_global_macros"] = $config.global_macros
     # create cache path
     Pathname.new($config.path_to_cache_file).dirname.mkpath
     # save cache to disk
