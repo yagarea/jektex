@@ -167,24 +167,28 @@ jektex:
   silent: true
 ```
 
-**Trust**  
-This option toggles features KaTeX deems potentially unsafe (`false` by default).
+**KaTeX options**  
+You can pass any [KaTeX rendering option](https://katex.org/docs/options) to the renderer
+through the `katex_options` key. Write the keys exactly as the KaTeX documentation spells them:
 ```yaml
 jektex:
-  trust: false
+  katex_options:
+    trust: false
+    output: htmlAndMathml
+    strict: warn
 ```
 
-The features in question are:
+The most useful options are:
 
-- `{command: "\\url", url, protocol}` where `protocol` is a lowercased string like `"http"` or `"https"` that appears before a colon, or `"_relative"` for relative URLs.
-- `{command: "\\href", url, protocol}`
-- `{command: "\\includegraphics", url, protocol}`
-- `{command: "\\htmlClass", class}`
-- `{command: "\\htmlId", id}`
-- `{command: "\\htmlStyle", style}`
-- `{command: "\\htmlData", attributes}`
+- `trust` toggles features KaTeX deems potentially unsafe (`false` by default), namely
+  `\url`, `\href`, `\includegraphics`, `\htmlClass`, `\htmlId`, `\htmlStyle` and `\htmlData`.
+- `output: html` halves the size of every rendered formula by omitting the invisible MathML
+  copy. Be aware that the MathML is what screen readers use.
+- `maxExpand` limits macro expansion and protects your build from runaway recursive macros.
 
-For more information go to [katex.org/docs/options](https://katex.org/docs/options).
+Jektex controls `displayMode`, `macros`, `throwOnError` and `globalGroup` itself,
+so these keys are ignored (define your macros with the `macros` option above).
+Changing any KaTeX option invalidates the cache and the next build re-renders everything once.
 
 
 **Complete examples**  
@@ -194,7 +198,8 @@ jektex:
   cache_dir: ".jektex-cache"
   ignore: ["*.xml"]
   silent: false
-  trust: false
+  katex_options:
+    trust: false
   macros:
     - ["\\Q", "\\mathbb{Q}"]
     - ["\\C", "\\mathbb{C}"]
@@ -206,7 +211,7 @@ jektex:
   cache_dir: ".jekyll-cache"
   ignore: []
   silent: false
-  trust: false
+  katex_options: {}
   macros: []
 ```
 
