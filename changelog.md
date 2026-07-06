@@ -2,7 +2,7 @@
 
 ## 0.2.0
 - Major internal rewrite into small tested classes (Config, Renderer, Cache, Processor, Reporter) with a full unit test suite.
-- New `trust` option in config that enables adverse behavior viz. [docs](https://katex.org/docs/options).
+- New `katex_options` config key that passes any KaTeX rendering option (like `trust`, `output` or `strict`) directly to KaTeX viz. [docs](https://katex.org/docs/options). Changing them invalidates the cache automatically.
 - Fix `jektex: false` in front matter being ignored. Boolean values now disable rendering, quoted `"false"` keeps working.
 - Expressions inside code blocks, inline code, `{% highlight %}` tags and similar are no longer rendered. LaTeX in code samples now stays as written, matching the behavior of KaTeX's client side auto-render ([#5](https://github.com/yagarea/jektex/issues/5)).
 - Formulas in kramdown notation (`$$..$$`) inside raw HTML blocks like `<div>` are now rendered ([#7](https://github.com/yagarea/jektex/issues/7)). Kramdown skips markdown processing there, so they previously stayed literal. Only markdown source files are affected. A formula alone on its line renders in display mode, inside text flow inline; `\$$` escapes rendering.
