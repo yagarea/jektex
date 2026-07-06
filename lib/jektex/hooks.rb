@@ -12,6 +12,7 @@ end
 Jekyll::Hooks.register :site, :after_init do |site|
   Jektex.config    = Jektex::Config.new(site.config || Hash.new)
   Jektex.reporter  = Jektex::Reporter.new(Jektex.config)
+  Jektex.config.warnings.each { |warning| Jektex.reporter.warn(warning) }
   Jektex.cache     = Jektex::Cache.new(Jektex.config, reporter: Jektex.reporter).load
   Jektex.renderer  = Jektex::Renderer.new(Jektex.config)
   Jektex.page_processor = Jektex::PageProcessor.new(config: Jektex.config,

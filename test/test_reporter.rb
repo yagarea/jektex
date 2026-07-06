@@ -81,6 +81,27 @@ class TestReporter < Test::Unit::TestCase
   end
 
 
+  def test_warn_prints_to_stderr_in_yellow
+    err = StringIO.new
+    reporter = Jektex::Reporter.new(build_config, out: @out, err: err)
+
+    reporter.warn("something is off")
+
+    assert_equal("\e[33m#{INDENT}LaTeX: something is off\e[0m\n", err.string)
+    assert_equal("", @out.string)
+  end
+
+
+  def test_warn_ignores_silent_option
+    err = StringIO.new
+    reporter = Jektex::Reporter.new(build_config("silent" => true), out: StringIO.new, err: err)
+
+    reporter.warn("bad option")
+
+    assert_true(err.string.include?("bad option"))
+  end
+
+
   def test_silent_reporter_prints_nothing
     silent_out = StringIO.new
     silent_reporter = Jektex::Reporter.new(build_config("silent" => true), out: silent_out)

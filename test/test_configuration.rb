@@ -45,6 +45,7 @@ class TestConfiguration < Test::Unit::TestCase
     }, config.global_macros)
     assert_equal(0, config.number_of_global_macros)
     assert_equal(@jektex_logo_macro, config.global_macros['\jektex'])
+    assert_equal([], config.warnings)
   end
 
 
@@ -58,8 +59,10 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(true, config.silent)
     assert_equal(true, config.disable_disk_cache)
 
-    # pass-through options survive, reserved keys are stripped
+    # pass-through options survive, reserved keys are stripped with a warning
     assert_equal({ "trust" => true, "output" => "html" }, config.katex_options)
+    assert_equal(4, config.warnings.size)
+    assert_true(config.warnings.all? { |warning| warning.include?("controlled by jektex") })
     
     assert_equal({
       '\TEST1' => '\text{THIS IS A TEST MACRO}',
@@ -78,6 +81,66 @@ class TestConfiguration < Test::Unit::TestCase
     config = Jektex::Config.new({ "markdown_ext" => "md, MDX" })
 
     assert_equal([".md", ".mdx"], config.markdown_extensions)
+  end
+
+
+  def test_unknown_option_produces_warning
+    config = Jektex::Config.new({ "jektex" => { "slient" => true } })
+
+    assert_equal(1, config.warnings.size)
+    assert_true(config.warnings.first.include?('unknown option "slient"'))
+    assert_true(config.warnings.first.include?("cache_dir, ignore, silent, macros, katex_options"))
+    assert_equal(false, config.silent)
+  end
+
+
+  def test_invalid_ignore_falls_back_to_default
+    config = Jektex::Config.new({ "jektex" => { "ignore" => "*.xml" } })
+
+    assert_true(config.warnings.first.include?('option "ignore" must be a list of file patterns'))
+    assert_true(config.warnings.first.include?("falling back to default: []"))
+    assert_equal([".jekyll-cache/*"], config.ignore)
+  end
+
+
+  def test_invalid_silent_falls_back_to_default
+    config = Jektex::Config.new({ "jektex" => { "silent" => "yes" } })
+
+    assert_true(config.warnings.first.include?("falling back to default: false"))
+    assert_equal(false, config.silent)
+  end
+
+
+  def test_invalid_cache_dir_falls_back_to_default
+    config = Jektex::Config.new({ "jektex" => { "cache_dir" => 13 } })
+
+    assert_true(config.warnings.first.include?('falling back to default: ".jekyll-cache"'))
+    assert_equal(File.join(".jekyll-cache", "jektex-cache.marshal"), config.path_to_cache_file)
+  end
+
+
+  def test_invalid_macros_fall_back_to_no_macros
+    config = Jektex::Config.new({ "jektex" => { "macros" => { '\Q' => '\mathbb{Q}' } } })
+
+    assert_true(config.warnings.first.include?("falling back to default: no macros"))
+    assert_equal(0, config.number_of_global_macros)
+  end
+
+
+  def test_invalid_katex_options_fall_back_to_empty
+    config = Jektex::Config.new({ "jektex" => { "katex_options" => "html" } })
+
+    assert_true(config.warnings.first.include?("falling back to default: {}"))
+    assert_equal(Hash.new, config.katex_options)
+  end
+
+
+  def test_non_mapping_jektex_section_is_ignored_with_warning
+    config = Jektex::Config.new({ "jektex" => true })
+
+    assert_true(config.warnings.first.include?("must be a mapping of options"))
+    assert_equal(false, config.silent)
+    assert_equal([".jekyll-cache/*"], config.ignore)
   end
 end
 
