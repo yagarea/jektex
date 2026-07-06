@@ -16,6 +16,11 @@ module Jektex
   # LaTeX must show the LaTeX, see github issue #5) while all other math
   # is rendered.
   #
+  # Kramdown notation is converted to LaTeX notation by kramdown itself —
+  # except inside raw HTML blocks, which kramdown does not process; the
+  # $$..$$ expressions left there are found and rendered too (issue #7),
+  # but only for markdown source files, where $$ has a defined meaning.
+  #
   # All expressions a page needs are collected first and rendered in one
   # batched KaTeX call, because each call to an external ExecJS runtime
   # costs far more than the rendering itself.
@@ -30,6 +35,16 @@ module Jektex
 
     # everything resolve_math reacts to, found in one pass
     MATH_PATTERN = /(?<inline>\\\((?<inline_body>.*?)(?<!\\)\\\))|(?<display>\\\[(?<display_body>.*?)(?<!\\)\\\])|(?<token>#{TOKEN.source})/m
+
+    # kramdown converts its $$..$$ notation everywhere except inside raw
+    # HTML blocks; these leftovers in the output of markdown pages are
+    # rendered too (github issue #7). (?<!\\) honors \$$ as an opt-out
+    # and keeps \$ inside a body from closing the expression.
+    DOLLAR_MATH = /(?<dollars>(?<!\\)\$\$(?<dollars_body>.+?)(?<!\\)\$\$)/m
+
+    # never used on protected segments: the dollars alternative could
+    # swallow a protection token between two dollar signs there
+    MATH_PATTERN_WITH_DOLLARS = /#{MATH_PATTERN.source}|#{DOLLAR_MATH.source}/m
 
     # markup whose contents must never be rendered
     # (the same set KaTeX's own auto-render extension ignores)
@@ -69,10 +84,12 @@ module Jektex
     end
 
     # post_render: render the protected tokens and the kramdown-notation
-    # math (kramdown turns its $$..$$ into \(..\)/\[..\] during conversion)
+    # math (kramdown turns its $$..$$ into \(..\)/\[..\] during conversion,
+    # except inside raw HTML blocks, where the $$..$$ survives verbatim)
     def process_output(page)
       return page.output if !page.data || ignored?(page)
-      return resolve_math(page.output.to_s, page.relative_path)
+      return resolve_math(page.output.to_s, page.relative_path,
+                          dollars: markdown_page?(page))
     end
 
     def protect_math(text)
@@ -80,9 +97,9 @@ module Jektex
       return text.gsub(DISPLAY_MATH) { protect_expression($~[0], $2, true) }
     end
 
-    def resolve_math(text, doc_path)
-      return text unless contains_math?(text)
-      instructions = collect_instructions(text)
+    def resolve_math(text, doc_path, dollars: false)
+      return text unless contains_math?(text, dollars)
+      instructions = collect_instructions(text, dollars)
       render_missing_expressions(instructions, doc_path)
       return apply_instructions(text, instructions, doc_path)
     end
@@ -110,8 +127,13 @@ module Jektex
 
     private
 
-    def contains_math?(text)
-      return text.include?('\(') || text.include?('\[') || text.include?("jektexprotected")
+    def contains_math?(text, dollars)
+      return true if text.include?('\(') || text.include?('\[') || text.include?("jektexprotected")
+      return dollars && text.include?("$$")
+    end
+
+    def markdown_page?(page)
+      return @config.markdown_extensions.include?(File.extname(page.relative_path.to_s).downcase)
     end
 
     def protect_expression(source, body, display_mode)
@@ -122,21 +144,24 @@ module Jektex
 
     ##### scanning
 
-    def collect_instructions(text)
+    def collect_instructions(text, dollars)
       instructions = Array.new
       position = 0
       text.scan(PROTECTED_ELEMENTS) do
         match = Regexp.last_match
-        scan_segment(text[position...match.begin(0)], position, :plain, instructions)
+        scan_segment(text[position...match.begin(0)], position, :plain, instructions,
+                     text: text, dollars: dollars)
         scan_segment(match[0], match.begin(0), :protected, instructions)
         position = match.end(0)
       end
-      scan_segment(text[position..].to_s, position, :plain, instructions)
+      scan_segment(text[position..].to_s, position, :plain, instructions,
+                   text: text, dollars: dollars)
       return instructions
     end
 
-    def scan_segment(segment, offset, kind, instructions)
-      segment.scan(MATH_PATTERN) do
+    def scan_segment(segment, offset, kind, instructions, text: segment, dollars: false)
+      pattern = dollars ? MATH_PATTERN_WITH_DOLLARS : MATH_PATTERN
+      segment.scan(pattern) do
         match = Regexp.last_match
         position = offset + match.begin(0)
         if match[:token]
@@ -152,11 +177,29 @@ module Jektex
                                                 expression.source))
           end
         elsif kind == :plain
-          body = match[:inline_body] || match[:display_body]
-          instructions.append(Instruction.new(position, match[0].length, :expression,
-                                              body, !match[:display].nil?, match[0]))
+          # the dollars guard is required: asking a plain MATH_PATTERN
+          # match for the group raises IndexError
+          if dollars && match[:dollars]
+            instructions.append(Instruction.new(position, match[0].length, :expression,
+                                                match[:dollars_body],
+                                                standalone_line?(text, position, position + match[0].length),
+                                                match[0]))
+          else
+            body = match[:inline_body] || match[:display_body]
+            instructions.append(Instruction.new(position, match[0].length, :expression,
+                                                body, !match[:display].nil?, match[0]))
+          end
         end
       end
+    end
+
+    # kramdown renders $$..$$ standing alone on its line(s) as display math
+    # and mid-text occurrences as inline math; mirror that on the output text
+    def standalone_line?(text, start, stop)
+      line_start = start.zero? ? 0 : ((text.rindex("\n", start - 1) || -1) + 1)
+      line_end = text.index("\n", stop) || text.length
+      return text[line_start...start].match?(/\A\s*\z/) &&
+             text[stop...line_end].match?(/\A\s*\z/)
     end
 
     ##### rendering
