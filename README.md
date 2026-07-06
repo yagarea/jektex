@@ -16,6 +16,7 @@ This project is [endorsed by KaTeX.org](https://katex.org/docs/libs#jekyll).
 - Doesn't interfere with Jekyll workflow and project structure
 - Marks invalid expressions in document, printing its location during rendering
 - Leaves LaTeX inside code blocks and inline code untouched, so you can write about LaTeX
+- Renders formulas inside raw HTML blocks, which kramdown skips
 - Is highly configurable with sensible defaults
 - Makes sure that cache does not contain expression rendered with outdated configuration
 - Supports two major LaTeX notations
@@ -48,6 +49,23 @@ display mode?
 This is how [kramdown](https://kramdown.gettalong.org/) (Jekyll's markdown parser) works 
 so I decided to respect this convention. It makes this plugin more consistent and universal.
 See [this issue](https://github.com/gettalong/kramdown/issues/762) for more context._
+
+**Formulas inside raw HTML blocks**  
+Kramdown does not process markdown inside block-level HTML tags, so it leaves formulas
+like `<div>$$\beta$$</div>` unconverted. Jektex finds these leftover `$$` formulas after
+the conversion and renders them itself. A formula standing alone on its line renders
+in display mode, a formula inside text flow renders inline:
+```html
+<div>The inline formula $$e^{i\theta}$$ sits in text flow.
+
+$$ \left[ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right] \Psi(\mathbf{r},t) $$
+</div>
+```
+This applies only to markdown source files and never inside `pre`, `code`, `script`
+and similar tags. You can prevent rendering of a specific formula by escaping it
+as `\$$` or by putting it in a code span. If you prefer kramdown to process the
+content of an HTML block itself, give the tag the
+[`markdown="1"` attribute](https://kramdown.gettalong.org/syntax.html#html-blocks).
 
 
 ### LaTex math mode notation
