@@ -95,12 +95,13 @@ module Jektex
       Digest::SHA2.hexdigest(expression) + (display_mode ? ":display" : ":inline")
     end
 
-    # every config option that changes KaTeX output (except macros, which
-    # are diffed individually) must be part of this fingerprint
+    # everything that changes KaTeX output (except macros, which are diffed
+    # individually) must be part of this fingerprint; katex_options covers
+    # all pass-through options, jektex-side additions must be appended
     def fingerprint
       @fingerprint ||= [FORMAT,
                         Digest::SHA2.file(@config.path_to_katex_js).hexdigest[0, 16],
-                        "trust=#{@config.trust}"].join("|")
+                        @config.katex_options.sort.inspect].join("|")
     end
   end
 end
