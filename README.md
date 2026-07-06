@@ -95,6 +95,7 @@ There is a build in macro for jektex logo. You can use it as `\jektex`.
 
 ### Config
 Jektex is highly configurable via your `_config.yml` file.
+Unknown options and invalid values are reported during the build and fall back to their defaults.
 
 **Disabling cache**  
 You can disable caching with the `disable_disk_cache` option.
@@ -188,6 +189,9 @@ The most useful options are:
 
 Jektex controls `displayMode`, `macros`, `throwOnError` and `globalGroup` itself,
 so these keys are ignored (define your macros with the `macros` option above).
+Values of the documented KaTeX options are checked: an invalid value is reported
+and KaTeX's own default is used instead. Option names jektex does not know
+(for example ones added by newer KaTeX versions) are passed through unchecked.
 Changing any KaTeX option invalidates the cache and the next build re-renders everything once.
 
 

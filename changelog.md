@@ -16,6 +16,7 @@
 - Faster startup: the KaTeX bundle is compiled on first use instead of at load time.
 - Much faster first builds: all new expressions of a page are rendered in a single KaTeX call instead of one call per expression (measured around 5-10x faster with node/bun).
 - Pages without any math are skipped without work and progress output is throttled, so large cached builds are not slowed down by console printing.
+- Unknown config options and invalid values (including values of KaTeX options) are no longer silently ignored. Jektex warns about them during the build and invalid values fall back to their documented defaults.
 
 ## 0.1.1
 - Update KaTeX to 0.16.9 (It is recommended to update your KaTeX css to prevent visual glitches.)

@@ -135,6 +135,33 @@ class TestConfiguration < Test::Unit::TestCase
   end
 
 
+  def test_invalid_katex_option_value_is_dropped_with_warning
+    config = Jektex::Config.new({ "jektex" => { "katex_options" => { "trust" => "a" } } })
+
+    assert_equal(1, config.warnings.size)
+    assert_true(config.warnings.first.include?('KaTeX option "trust" must be true or false'))
+    assert_true(config.warnings.first.include?("falling back to KaTeX default: false"))
+    assert_equal(Hash.new, config.katex_options)
+  end
+
+
+  def test_invalid_katex_output_value_is_dropped_with_warning
+    config = Jektex::Config.new({ "jektex" => { "katex_options" => { "output" => "xml",
+                                                                     "maxExpand" => "many" } } })
+
+    assert_equal(2, config.warnings.size)
+    assert_equal(Hash.new, config.katex_options)
+  end
+
+
+  def test_unknown_katex_options_pass_through_unchecked
+    config = Jektex::Config.new({ "jektex" => { "katex_options" => { "futureOption" => 13 } } })
+
+    assert_equal([], config.warnings)
+    assert_equal({ "futureOption" => 13 }, config.katex_options)
+  end
+
+
   def test_non_mapping_jektex_section_is_ignored_with_warning
     config = Jektex::Config.new({ "jektex" => true })
 

@@ -8,6 +8,24 @@ module Jektex
 
     KNOWN_OPTIONS = ["cache_dir", "ignore", "silent", "macros", "katex_options"].freeze
 
+    # value checks for the KaTeX options documented at katex.org/docs/options;
+    # keys not listed here are passed to KaTeX unchecked, so options added
+    # by future KaTeX versions keep working without a jektex update
+    KATEX_OPTION_VALIDATIONS = {
+      "output"           => ['"html", "mathml" or "htmlAndMathml"', '"htmlAndMathml"',
+                             ->(value) { ["html", "mathml", "htmlAndMathml"].include?(value) }],
+      "leqno"            => ["true or false", "false", ->(value) { [true, false].include?(value) }],
+      "fleqn"            => ["true or false", "false", ->(value) { [true, false].include?(value) }],
+      "errorColor"       => ["a color string", '"#cc0000"', ->(value) { value.is_a?(String) }],
+      "minRuleThickness" => ["a number", "the KaTeX default", ->(value) { value.is_a?(Numeric) }],
+      "colorIsTextColor" => ["true or false", "false", ->(value) { [true, false].include?(value) }],
+      "maxSize"          => ["a number", "unlimited", ->(value) { value.is_a?(Numeric) }],
+      "maxExpand"        => ["a number", "1000", ->(value) { value.is_a?(Numeric) }],
+      "strict"           => ['true, false, "ignore", "warn" or "error"', '"warn"',
+                             ->(value) { [true, false, "ignore", "warn", "error"].include?(value) }],
+      "trust"            => ["true or false", "false", ->(value) { [true, false].include?(value) }]
+    }.freeze
+
     attr_reader :path_to_katex_js
     attr_reader :disable_disk_cache
     attr_reader :ignore
@@ -115,6 +133,13 @@ module Jektex
         end
       end
       @katex_options = options.reject { |key, _value| RESERVED_KATEX_OPTIONS.include?(key.to_s) }
+      KATEX_OPTION_VALIDATIONS.each do |name, (expectation, default_description, valid)|
+        next unless @katex_options.key?(name)
+        next if valid.call(@katex_options[name])
+        @warnings.append("KaTeX option \"#{name}\" must be #{expectation}, " \
+                         "falling back to KaTeX default: #{default_description}")
+        @katex_options.delete(name)
+      end
     end
 
     def read_macros(jektex_config)
