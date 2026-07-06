@@ -155,6 +155,20 @@ class TestHooks < Test::Unit::TestCase
   end
 
 
+  def test_config_warnings_are_printed_at_startup
+    site = FakeSite.new({ "jektex" => { "cache_dir" => File.join(@dir, "cache"),
+                                        "slient" => true } })
+    original_stderr = $stderr
+    $stderr = StringIO.new
+    begin
+      trigger_with_captured_output(:site, :after_init, site)
+      assert_true($stderr.string.include?('unknown option "slient"'))
+    ensure
+      $stderr = original_stderr
+    end
+  end
+
+
   def test_gem_loads_without_jekyll_in_a_clean_process
     lib_dir = File.expand_path("../lib", __dir__)
 

@@ -2,11 +2,20 @@ module Jektex
   # All console output of the plugin. Every method is a no-op when the
   # silent option is set, so callers never have to check it themselves.
   class Reporter
-    def initialize(config, out: $stdout)
+    def initialize(config, out: $stdout, err: $stderr)
       @out = out
+      @err = err
       @silent = config.silent
       @indent = config.console_indent
       @last_progress_time = nil
+    end
+
+    # Configuration problems must stay visible even with the silent
+    # option set — a broken config could be the reason silence was
+    # requested by accident. They go to stderr, so redirecting the
+    # build output does not hide them either.
+    def warn(message)
+      @err.puts "\e[33m#{@indent}LaTeX: #{message}\e[0m"
     end
 
     def info(message)
