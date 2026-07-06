@@ -32,6 +32,7 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(false, config.silent)
     assert_equal("jektex", config.front_matter_tag)
     assert_equal(false, config.trust)
+    assert_equal([".markdown", ".mkdown", ".mkdn", ".mkd", ".md"], config.markdown_extensions)
     assert_equal({
       '\jektex' => @jektex_logo_macro
     }, config.global_macros)
@@ -61,6 +62,13 @@ class TestConfiguration < Test::Unit::TestCase
     # Should not be changed by the test config
     assert_equal(" " * 13, config.console_indent)
     assert_equal("jektex", config.front_matter_tag)
+  end
+
+
+  def test_markdown_extensions_from_config
+    config = Jektex::Config.new({ "markdown_ext" => "md, MDX" })
+
+    assert_equal([".md", ".mdx"], config.markdown_extensions)
   end
 end
 

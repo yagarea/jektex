@@ -8,6 +8,7 @@ module Jektex
     attr_reader :front_matter_tag
     attr_reader :trust
     attr_reader :global_macros
+    attr_reader :markdown_extensions
 
     def initialize(config)
       @path_to_katex_js = File.join(__dir__, "/katex.min.js")
@@ -23,6 +24,8 @@ module Jektex
       @front_matter_tag = "jektex"
       @trust = false
 
+      @markdown_ext = "markdown,mkdown,mkdn,mkd,md"
+
       @global_macros = Hash.new
 
       if config.is_a?(Hash)
@@ -30,6 +33,7 @@ module Jektex
       end
       add_jektex_logo_macro
       @ignore.append("#{@cache_dir}/*")
+      @markdown_extensions = @markdown_ext.to_s.split(",").map { |ext| ".#{ext.strip.downcase}" }
     end
 
     def path_to_cache_file
@@ -56,6 +60,7 @@ module Jektex
       end
 
       @disable_disk_cache = config["disable_disk_cache"] if config.has_key?("disable_disk_cache")
+      @markdown_ext = config["markdown_ext"] if config.has_key?("markdown_ext")
     end
 
     def add_jektex_logo_macro
