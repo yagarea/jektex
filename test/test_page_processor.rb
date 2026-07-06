@@ -512,6 +512,20 @@ class TestPageProcessor < Test::Unit::TestCase
   end
 
 
+  def test_ignored_page_restores_embedded_tokens_instead_of_leaking_them
+    processor = make_processor({ "ignore" => ["*.xml"] })
+    post = make_page('post with \(x^2\) math')
+    tokenized_content = processor.process_content(post)
+    assert_match(TOKEN, tokenized_content)
+
+    feed = FakePage.new({}, nil, "<item>#{tokenized_content}</item>", "feed.xml")
+    result = processor.process_output(feed)
+
+    assert_equal('<item>post with \(x^2\) math</item>', result)
+    assert_equal(0, processor.rendered_count)
+  end
+
+
   ##### error and interrupt paths
 
   def test_invalid_expression_renders_error_and_reports_it

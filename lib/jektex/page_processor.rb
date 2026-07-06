@@ -87,7 +87,7 @@ module Jektex
     # math (kramdown turns its $$..$$ into \(..\)/\[..\] during conversion,
     # except inside raw HTML blocks, where the $$..$$ survives verbatim)
     def process_output(page)
-      return page.output if !page.data || ignored?(page)
+      return restore_protected_math(page.output) if !page.data || ignored?(page)
       return resolve_math(page.output.to_s, page.relative_path,
                           dollars: markdown_page?(page))
     end
@@ -126,6 +126,18 @@ module Jektex
     end
 
     private
+
+    # An ignored page must not render math, but it can still carry
+    # protection tokens — feeds embed the content of processed posts.
+    # Those tokens must never leak into the published site, so they
+    # are turned back into their original source text.
+    def restore_protected_math(output)
+      return output unless output.is_a?(String) && output.include?("jektexprotected")
+      return output.gsub(TOKEN) do |token|
+        expression = @protected_math[token]
+        expression ? expression.source : token
+      end
+    end
 
     def contains_math?(text, dollars)
       return true if text.include?('\(') || text.include?('\[') || text.include?("jektexprotected")
