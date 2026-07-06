@@ -155,6 +155,157 @@ class TestPageProcessor < Test::Unit::TestCase
   end
 
 
+  ##### kramdown $$ notation left in raw html blocks (issue #7)
+
+  def test_dollar_math_left_in_html_block_renders
+    processor = make_processor
+    page = make_page(nil)
+    page.output = '<div>$$\beta$$</div>'
+
+    result = processor.process_output(page)
+
+    assert_true(result.include?("katex"))
+    assert_false(result.include?("$$"))
+    assert_equal(1, processor.rendered_count)
+  end
+
+
+  def test_dollar_math_on_single_line_with_tags_renders_inline
+    page = make_page(nil)
+    page.output = '<div>$$\beta$$</div>'
+
+    assert_false(make_processor.process_output(page).include?("katex-display"))
+  end
+
+
+  def test_dollar_math_alone_on_line_renders_display
+    page = make_page(nil)
+    page.output = "<div>\n$$x^2$$\n</div>"
+
+    assert_true(make_processor.process_output(page).include?("katex-display"))
+  end
+
+
+  def test_multiline_dollar_block_renders_display
+    page = make_page(nil)
+    page.output = "<div>\n$$\na + b\n$$\n</div>"
+
+    assert_true(make_processor.process_output(page).include?("katex-display"))
+  end
+
+
+  def test_dollar_math_in_text_flow_renders_inline
+    page = make_page(nil)
+    page.output = '<div>see $$x^2$$ here</div>'
+
+    result = make_processor.process_output(page)
+
+    assert_true(result.include?("katex"))
+    assert_false(result.include?("katex-display"))
+  end
+
+
+  def test_dollar_math_inside_code_stays_literal
+    processor = make_processor
+    page = make_page(nil)
+    page.output = '<pre>$$x$$</pre> and <code>$$y$$</code>'
+
+    assert_equal('<pre>$$x$$</pre> and <code>$$y$$</code>', processor.process_output(page))
+    assert_equal(0, processor.rendered_count)
+  end
+
+
+  def test_escaped_dollars_stay_untouched
+    processor = make_processor
+    page = make_page(nil)
+    page.output = '<div>\$$x$$</div>'
+
+    assert_equal('<div>\$$x$$</div>', processor.process_output(page))
+    assert_equal(0, processor.rendered_count)
+  end
+
+
+  def test_dollar_math_on_non_markdown_page_stays_literal
+    config = build_config("cache_dir" => File.join(@dir, "cache"))
+    renderer = RecordingRenderer.new
+    processor = Jektex::PageProcessor.new(config: config,
+                                          cache: Jektex::Cache.new(config).load,
+                                          renderer: renderer,
+                                          reporter: Jektex::Reporter.new(config, out: StringIO.new))
+    page = FakePage.new({}, nil, '<div>$$x$$</div>', "page.html")
+
+    assert_equal('<div>$$x$$</div>', processor.process_output(page))
+    assert_equal(0, renderer.batch_calls)
+  end
+
+
+  def test_dollar_math_respects_custom_markdown_extensions
+    processor = make_processor({}, { "markdown_ext" => "mdx" })
+    mdx_page = FakePage.new({}, nil, '<div>$$x$$</div>', "post.mdx")
+    md_page = FakePage.new({}, nil, '<div>$$x$$</div>', "post.md")
+
+    assert_true(processor.process_output(mdx_page).include?("katex"))
+    assert_equal('<div>$$x$$</div>', processor.process_output(md_page))
+  end
+
+
+  def test_dollar_math_and_latex_notation_share_one_batch
+    config = build_config("cache_dir" => File.join(@dir, "cache"))
+    renderer = RecordingRenderer.new
+    processor = Jektex::PageProcessor.new(config: config,
+                                          cache: Jektex::Cache.new(config).load,
+                                          renderer: renderer,
+                                          reporter: Jektex::Reporter.new(config, out: StringIO.new))
+    page = make_page('\(\alpha\)')
+    token = processor.process_content(page)
+    page.output = "<p>#{token}</p><div>$$\\beta$$</div>"
+
+    processor.process_output(page)
+
+    assert_equal(1, renderer.batch_calls)
+    assert_equal(['\alpha', '\beta'], renderer.expressions.sort)
+    assert_equal(2, processor.rendered_count)
+  end
+
+
+  def test_dollar_math_shares_cache_with_latex_notation
+    first_build = make_processor
+    page = make_page(nil)
+    page.output = '\[x^2\]'
+    first_build.process_output(page)
+    @cache.save
+
+    second_build = make_processor
+    dollar_page = make_page(nil)
+    dollar_page.output = "<div>\n$$x^2$$\n</div>"
+    result = second_build.process_output(dollar_page)
+
+    assert_true(result.include?("katex-display"))
+    assert_equal(1, second_build.cache_hit_count)
+    assert_equal(0, second_build.rendered_count)
+  end
+
+
+  def test_token_between_dollars_in_code_is_still_restored
+    processor = make_processor
+    page = make_page('\(x^2\)')
+    token = processor.process_content(page)
+    page.output = "<pre>$$ #{token} $$</pre>"
+
+    assert_equal('<pre>$$ \(x^2\) $$</pre>', processor.process_output(page))
+  end
+
+
+  def test_dollars_do_not_match_across_protected_elements
+    processor = make_processor
+    page = make_page(nil)
+    page.output = '<div>$$ a <code>c</code> b $$</div>'
+
+    assert_equal('<div>$$ a <code>c</code> b $$</div>', processor.process_output(page))
+    assert_equal(0, processor.rendered_count)
+  end
+
+
   ##### kramdown notation in converted output (immediate rendering)
 
   def test_renders_display_math_in_output
