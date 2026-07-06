@@ -15,7 +15,7 @@ module Jektex
     # requested by accident. They go to stderr, so redirecting the
     # build output does not hide them either.
     def warn(message)
-      @err.puts "\e[33m#{@indent}LaTeX: #{message}\e[0m"
+      @err.puts "\e[33m#{@indent}JekTeX: #{message}\e[0m"
     end
 
     def info(message)

@@ -87,7 +87,7 @@ class TestReporter < Test::Unit::TestCase
 
     reporter.warn("something is off")
 
-    assert_equal("\e[33m#{INDENT}LaTeX: something is off\e[0m\n", err.string)
+    assert_equal("\e[33m#{INDENT}JekTeX: something is off\e[0m\n", err.string)
     assert_equal("", @out.string)
   end
 
