@@ -1,12 +1,18 @@
 module Jektex
   class Config
+    # KaTeX options jektex needs to control itself: displayMode is decided
+    # per expression by its delimiters, macros have their own config key,
+    # throwOnError drives the error reporting pipeline, and globalGroup
+    # would make rendering order-dependent, which breaks caching
+    RESERVED_KATEX_OPTIONS = ["displayMode", "macros", "throwOnError", "globalGroup"].freeze
+
     attr_reader :path_to_katex_js
     attr_reader :disable_disk_cache
     attr_reader :ignore
     attr_reader :console_indent
     attr_reader :silent
     attr_reader :front_matter_tag
-    attr_reader :trust
+    attr_reader :katex_options
     attr_reader :global_macros
     attr_reader :markdown_extensions
 
@@ -22,7 +28,7 @@ module Jektex
       @silent = false
 
       @front_matter_tag = "jektex"
-      @trust = false
+      @katex_options = Hash.new
 
       @markdown_ext = "markdown,mkdown,mkdn,mkd,md"
 
@@ -51,7 +57,11 @@ module Jektex
         @cache_dir = jektex_config["cache_dir"] if jektex_config.key?("cache_dir")
         @ignore = jektex_config["ignore"] if jektex_config.key?("ignore")
         @silent = jektex_config["silent"] if jektex_config.key?("silent")
-        @trust = jektex_config["trust"] if jektex_config.key?("trust")
+        if jektex_config["katex_options"].is_a?(Hash)
+          @katex_options = jektex_config["katex_options"].reject do |key, _value|
+            RESERVED_KATEX_OPTIONS.include?(key.to_s)
+          end
+        end
         if jektex_config.has_key?("macros")
           for macro_definition in jektex_config["macros"]
             @global_macros[macro_definition[0]] = macro_definition[1]
