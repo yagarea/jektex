@@ -4,7 +4,7 @@ require 'jektex/renderer'
 
 class TestRenderer < Test::Unit::TestCase
 
-  FakeRendererConfig = Struct.new(:path_to_katex_js, :global_macros, :trust)
+  FakeRendererConfig = Struct.new(:path_to_katex_js, :global_macros, :katex_options)
 
   def setup
     @renderer = Jektex::Renderer.new(build_config)
@@ -59,12 +59,24 @@ class TestRenderer < Test::Unit::TestCase
 
 
   def test_trust_option_enables_href
-    trusting = Jektex::Renderer.new(build_config("trust" => true))
-    distrusting = Jektex::Renderer.new(build_config("trust" => false))
+    trusting = Jektex::Renderer.new(build_config("katex_options" => { "trust" => true }))
+    distrusting = Jektex::Renderer.new(build_config)
     expression = '\href{https://example.com}{link}'
 
     assert_true(trusting.render(expression, display_mode: false).include?("<a "))
     assert_false(distrusting.render(expression, display_mode: false).include?("<a "))
+  end
+
+
+  def test_katex_options_are_passed_through
+    default_output = @renderer.render("x^2", display_mode: false)
+    html_only = Jektex::Renderer.new(build_config("katex_options" => { "output" => "html" }))
+
+    result = html_only.render("x^2", display_mode: false)
+
+    assert_true(default_output.include?("katex-mathml"))
+    assert_false(result.include?("katex-mathml"))
+    assert_true(result.include?("katex"))
   end
 
 
@@ -93,7 +105,7 @@ class TestRenderer < Test::Unit::TestCase
 
   def test_render_batch_with_no_expressions_makes_no_call
     renderer = Jektex::Renderer.new(
-      FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, false)
+      FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, Hash.new)
     )
 
     assert_equal([], renderer.render_batch([]))
@@ -102,7 +114,7 @@ class TestRenderer < Test::Unit::TestCase
 
   def test_katex_is_not_compiled_before_first_render
     renderer = Jektex::Renderer.new(
-      FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, false)
+      FakeRendererConfig.new("/nonexistent/katex.min.js", Hash.new, Hash.new)
     )
 
     assert_raise(Errno::ENOENT) { renderer.render("x", display_mode: false) }
