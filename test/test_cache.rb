@@ -4,7 +4,7 @@ require 'jektex/cache'
 class TestCache < Test::Unit::TestCase
 
   FakeCacheConfig = Struct.new(:path_to_cache_file, :path_to_katex_js,
-                               :disable_disk_cache, :trust, :global_macros)
+                               :disable_disk_cache, :katex_options, :global_macros)
 
   class FakeReporter
     attr_reader :messages
@@ -29,8 +29,8 @@ class TestCache < Test::Unit::TestCase
     FileUtils.remove_entry(@dir)
   end
 
-  def make_config(macros: {}, trust: false, disable_disk_cache: false)
-    FakeCacheConfig.new(@cache_file, @katex_js, disable_disk_cache, trust, macros)
+  def make_config(macros: {}, katex_options: {}, disable_disk_cache: false)
+    FakeCacheConfig.new(@cache_file, @katex_js, disable_disk_cache, katex_options, macros)
   end
 
   def make_cache(reporter: nil, **config_options)
@@ -145,13 +145,13 @@ class TestCache < Test::Unit::TestCase
   end
 
 
-  def test_changing_trust_discards_cache
-    cache = make_cache(trust: false)
+  def test_changing_katex_options_discards_cache
+    cache = make_cache(katex_options: {})
     cache.store("x", false, "html")
     cache.save
 
     reporter = FakeReporter.new
-    reloaded = make_cache(trust: true, reporter: reporter)
+    reloaded = make_cache(katex_options: { "trust" => true }, reporter: reporter)
 
     assert_equal(0, reloaded.size)
     assert_equal(["cache reset (configuration or KaTeX changed)"], reporter.messages)

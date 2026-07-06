@@ -9,7 +9,14 @@ class TestConfiguration < Test::Unit::TestCase
         "cache_dir" => "TEST_CACHE_DIR",
         "ignore" => ["*.TEST_IGNORED_EXTENSION", "IGNORED_FILE.md"],
         "silent" => true,
-        "trust" => true,
+        "katex_options" => {
+          "trust" => true,
+          "output" => "html",
+          "displayMode" => true,
+          "macros" => { "SMUGGLED" => "MACRO" },
+          "throwOnError" => false,
+          "globalGroup" => true
+        },
         "macros" => [
           ['\TEST1', '\text{THIS IS A TEST MACRO}'],
           ['\TEST2', '\text{THIS IS A TEST MACRO TWO}'],
@@ -31,7 +38,7 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(" " * 13, config.console_indent)
     assert_equal(false, config.silent)
     assert_equal("jektex", config.front_matter_tag)
-    assert_equal(false, config.trust)
+    assert_equal(Hash.new, config.katex_options)
     assert_equal([".markdown", ".mkdown", ".mkdn", ".mkd", ".md"], config.markdown_extensions)
     assert_equal({
       '\jektex' => @jektex_logo_macro
@@ -49,8 +56,10 @@ class TestConfiguration < Test::Unit::TestCase
                  config.path_to_cache_file)
     assert_equal(["*.TEST_IGNORED_EXTENSION", "IGNORED_FILE.md", "TEST_CACHE_DIR/*"], config.ignore)
     assert_equal(true, config.silent)
-    assert_equal(true, config.trust)
     assert_equal(true, config.disable_disk_cache)
+
+    # pass-through options survive, reserved keys are stripped
+    assert_equal({ "trust" => true, "output" => "html" }, config.katex_options)
     
     assert_equal({
       '\TEST1' => '\text{THIS IS A TEST MACRO}',
