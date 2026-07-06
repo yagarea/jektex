@@ -30,7 +30,8 @@ end
 
 # After conversion the HTML structure is known: tokens inside code markup
 # are restored to their source text, everything else is rendered — including
-# the \(..\)/\[..\] delimiters kramdown produces from its $$..$$ notation.
+# the \(..\)/\[..\] delimiters kramdown produces from its $$..$$ notation
+# and the $$..$$ kramdown leaves untouched inside raw HTML blocks.
 Jekyll::Hooks.register [:pages, :documents], :post_render do |page|
   page.output = Jektex.page_processor.process_output(page)
 end
