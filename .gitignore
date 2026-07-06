@@ -68,3 +68,4 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 .idea/
 Gemfile.lock
+.vendor
