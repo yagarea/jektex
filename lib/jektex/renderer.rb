@@ -36,7 +36,7 @@ module Jektex
     def initialize(config)
       @path_to_katex_js = config.path_to_katex_js
       @global_macros = config.global_macros
-      @trust = config.trust
+      @katex_options = config.katex_options
     end
 
     # Renders [[expression, display_mode], ...] in one JavaScript call.
@@ -71,10 +71,11 @@ module Jektex
       @katex ||= ExecJS.compile(File.read(@path_to_katex_js) + BATCH_HELPER)
     end
 
+    # user options first, so the keys jektex decides itself always win
+    # (reserved keys are already stripped by the config, this is a backstop)
     def base_options(display_mode)
-      { displayMode: display_mode,
-        macros: @global_macros,
-        trust: @trust }
+      @katex_options.merge(displayMode: display_mode,
+                           macros: @global_macros)
     end
   end
 end
